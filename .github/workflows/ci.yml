@@ -1,0 +1,24 @@
+name: pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Rebuild marts from the committed snapshots
+        run: python pipeline/build.py
+      - name: Render the site
+        run: python pipeline/site.py
+      - name: Test
+        run: python -m unittest discover -s tests -v
+      - name: Confirm the rendered site is current
+        run: git diff --exit-code -- site/index.html data/marts

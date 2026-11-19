@@ -1,0 +1,47 @@
+{
+  "snapshots": [
+    {
+      "file": "country_codes.csv",
+      "sha256": "bb199ebc9636b9872705e8216f1f849359f136a7668ebfa23a3c58048462ab92",
+      "bytes_on_disk": 133991,
+      "retrieved_at": "2026-11-19T22:41:41+00:00"
+    },
+    {
+      "file": "country_codes.json",
+      "sha256": "53c9c774b71267d8f31879320e15cf27e3eb399d6045b5e4c963737e2e562516",
+      "bytes_on_disk": 15004,
+      "retrieved_at": "2026-11-19T22:41:41+00:00"
+    },
+    {
+      "file": "ne_110m_admin_0_countries.json.gz",
+      "sha256": "ac86a889ed3c16c97f21e23a35434ba1e29043361148b51bc9f287a7544cf052",
+      "bytes_on_disk": 209535,
+      "retrieved_at": "2026-11-19T22:44:32+00:00"
+    },
+    {
+      "file": "un_sdg_series.json.gz",
+      "sha256": "7d2ca513e3663f2927129091ced386820e8eac0cc392bafed3192bb4f7c235bb",
+      "bytes_on_disk": 88548,
+      "retrieved_at": "2026-11-19T22:46:32+00:00"
+    },
+    {
+      "file": "worldbank_countries.json.gz",
+      "sha256": "11795f16ce7da35ed3c008b59f80a5635aa5ce4dcd0cea25c8b9caae93398258",
+      "bytes_on_disk": 9952,
+      "retrieved_at": "2026-11-19T22:40:00+00:00"
+    },
+    {
+      "file": "worldbank_population.json.gz",
+      "sha256": "c0b57236fa4743706f8784dd6de3b3b5593e96ae73b963dcd6f5362a2de9c2dc",
+      "bytes_on_disk": 2405,
+      "retrieved_at": "2026-11-19T22:49:00+00:00"
+    },
+    {
+      "file": "worldbank_projects.json.gz",
+      "sha256": "a6b44bfa8a3a321ecb784cd7c736aec1c2be48febcb206f7e1f32770548c014f",
+      "bytes_on_disk": 1242155,
+      "retrieved_at": "2026-11-19T22:41:40+00:00"
+    }
+  ],
+  "built": "2026-11-19T22:49:00+00:00"
+}

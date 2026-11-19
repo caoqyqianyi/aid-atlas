@@ -1,0 +1,3 @@
+# No third-party runtime dependencies.
+# The pipeline uses the standard library only (urllib, gzip, sqlite3, json, csv).
+# D3 is loaded from a CDN by the rendered site and is not a Python dependency.

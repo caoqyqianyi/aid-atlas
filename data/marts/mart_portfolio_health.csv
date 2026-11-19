@@ -1,0 +1,12 @@
+metric,value,unit
+total_operations,18917.0,count
+active_value_usd,331910560000.0,USD
+total_value_usd,1592627820000.0,USD
+share_operations_active,0.13131046148966538,ratio
+share_value_active,0.20840434647185807,ratio
+mean_implementation_years,5.953163800641213,years
+share_operations_over_10y,0.045613523754007575,ratio
+countries_with_portfolio,217.0,count
+countries_with_need_data,171.0,count
+sector_hhi,0.1197459158842688,index
+share_value_top10_operations,0.0745036841061837,ratio
