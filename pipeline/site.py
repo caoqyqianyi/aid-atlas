@@ -114,6 +114,22 @@ def tercile_thresholds(values: list[float]) -> list[float]:
     return [round(values[n // 3], 4), round(values[2 * n // 3], 4)]
 
 
+def snapshot_date() -> str:
+    """Date the raw snapshots were captured, not the date of this render.
+
+    Using today() would rewrite the page every day without any new data and
+    make the committed site impossible to reproduce, which is exactly what the
+    CI drift check exists to prevent.
+    """
+    path = RAW / "manifest.json"
+    try:
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return date.today().isoformat()
+    stamps = [s.get("retrieved_at", "") for s in manifest.get("snapshots", [])
+              if s.get("retrieved_at")]
+    return max(stamps)[:10] if stamps else date.today().isoformat()
+
 def build_payload() -> dict:
     countries = load_csv("mart_country")
     health = {row["metric"]: num(row["value"]) for row in load_csv("mart_portfolio_health")}
@@ -150,7 +166,7 @@ def build_payload() -> dict:
         )
 
     return {
-        "generated": date.today().isoformat(),
+        "generated": snapshot_date(),
         "countries": rows,
         "health": health,
         "sectors": [
