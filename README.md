@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/python-3.11%2B-2f5d7c?style=flat-square)](https://www.python.org/)
 [![SQL](https://img.shields.io/badge/marts-SQLite-2f5d7c?style=flat-square)](https://sqlite.org/)
 [![Dependencies](https://img.shields.io/badge/runtime%20deps-none-e9e3d1?style=flat-square)](#running-it)
-[![Tests](https://img.shields.io/badge/tests-19%20passing-6b8f71?style=flat-square)](#running-it)
+[![Tests](https://img.shields.io/badge/tests-31%20passing-6b8f71?style=flat-square)](#running-it)
 [![CI](https://github.com/caoqyqianyi/portfolio-lens/actions/workflows/ci.yml/badge.svg)](https://github.com/caoqyqianyi/portfolio-lens/actions/workflows/ci.yml)
 [![Licence](https://img.shields.io/badge/licence-MIT-6b6f66?style=flat-square)](LICENSE)
 
@@ -30,9 +30,12 @@ rather than as a map, and the geospatial layer is a reading aid, not the answer.
 - [What it answers](#what-it-answers)
 - [Reading the dashboard](#reading-the-dashboard)
 - [Key findings](#key-findings)
+- [The operating profile](#the-operating-profile)
+- [A scenario, priced](#a-scenario-priced)
 - [How it works](#how-it-works)
 - [Repository layout](#repository-layout)
 - [Running it](#running-it)
+- [Data quality](#data-quality)
 - [Method, in one page](#method-in-one-page)
 - [What this cannot tell you](#what-this-cannot-tell-you)
 - [Data provenance](#data-provenance)
@@ -54,6 +57,8 @@ financing?* — and answers it with:
 | `allocation_gap` | percentile rank of a country on need minus its percentile rank on financing per person |
 | `mart_priority` | the 25 countries with the largest positive gap, with the columns that explain each entry |
 | `mart_country` | the full analytic table, one row per country, both layers plus terciles |
+| `mart_portfolio_performance` | the same book as an operating profile: status, approval cohort, duration band, concentration |
+| `mart_reallocation` | one row per scenario share: the pool, who funds it, who receives it, and the per-person gain |
 | `site/index.html` | the same result as a self-contained interactive page |
 
 Both ranks are size-neutral, so a small island state and a large borrower are compared on
@@ -62,9 +67,10 @@ review: it produces a short list that a team of five could actually work through
 
 ## Reading the dashboard
 
-The page is one file with four views and no dependencies beyond a single CDN copy of D3. The
-default view colours each country by its allocation gap and opens a country card on hover, so a
-portfolio question can be asked of the map rather than of the table.
+The page is one file with no dependencies beyond a single CDN copy of D3, and it moves from
+the map to the book without leaving the page. The default view colours each country by its
+allocation gap and opens a country card on hover, so a portfolio question can be asked of the
+map rather than of the table.
 
 <p align="center">
   <img src="docs/img/map-allocation.png" alt="Allocation gap map with a country card open for China" width="860">
@@ -121,6 +127,50 @@ Portfolio: **18,917 operations, US$1.59tn committed, US$331.9bn active** across 
 - **The book is slow-moving**: only 13.1% of operations are active, and 4.6% have a planned
   duration over ten years.
 
+## The operating profile
+
+The map answers *where*. A portfolio review also has to answer *what state the book is in*, and
+that question is organisational rather than geographic: how much value is still live, how old
+the live work is, how long operations are planned to run, and whether a handful of operations
+carry the book.
+
+<p align="center">
+  <img src="docs/img/operating.png" alt="Section 05: status mix, planned duration, approval cohorts, and the scenario card" width="880">
+</p>
+
+- **One fifth of committed value is live.** Active 20.8%, closed 59.7%, pipeline 9.8%, dropped
+  9.7%. Pipeline and dropped together are 19.5% of value — the queue that a review inherits
+  rather than creates.
+- **The live book is young; the closed book is not.** The 2020s approval cohort holds 19.9% of
+  value and is 79% still active. The 2010s cohort holds 20.5% and is 24% still active. Value
+  approved before 2000 is fully closed.
+- **Planned duration clusters in the middle.** 43.4% of value sits in 5–10 year operations,
+  4.1% above ten years, and 24.6% carries no usable dates — reported as its own bucket, not
+  imputed.
+- **Concentration is low.** The largest single operation is 5.7% of value, the top ten 7.5%,
+  the top fifty 11.1%. No single project can move the portfolio, which is what makes a
+  programmatic review feasible.
+
+## A scenario, priced
+
+The natural follow-up question — *what would moving money actually buy?* — is answered with one
+number rather than an adjective. Five per cent of live value is $16.6bn; raised pro rata from the
+60 countries with a negative gap and a live portfolio, and paid pro rata to population across
+the 25 short-listed countries:
+
+| Quantity | Value |
+|---|---|
+| Value moved | $16.6bn (5.0% of $331.9bn live) |
+| Gain per person, 25 recipient countries | $26.96 |
+| Cost per person, 60 contributing countries | $16.26 |
+| People covered | 615m |
+
+The slider on the page recomputes the pool at 1–10% with the same formula, so the arithmetic is
+auditable rather than asserted. The one-page business case — assumptions, what the number does
+not buy, and what evidence would falsify it — is in
+[`docs/reallocation-case.md`](docs/reallocation-case.md). It is a demonstration on a public
+snapshot, not a recommendation.
+
 ## How it works
 
 <p align="center">
@@ -133,9 +183,12 @@ Portfolio: **18,917 operations, US$1.59tn committed, US$331.9bn active** across 
    operation–country link, with commitments split evenly across recipients. These CSVs are
    generated on every build and are not versioned.
 3. **Marts** are plain SQL files run in filename order. Intermediates are `int_*`, published
-   tables are `mart_*`. Nothing in a mart reads a CSV directly.
-4. **Site** embeds the marts and the country geometry into one HTML file. Only D3 is fetched
-   from a CDN; there is no runtime API call.
+   tables are `mart_*`. Nothing in a mart reads a CSV directly. Eleven models produce seven
+   published tables.
+4. **Check, then publish.** `pipeline/dq.py` runs 13 assertions over the warehouse and the
+   marts and writes `mart_dq.csv`; the renderer reads that file, and a failing check stops the
+   build before a page is written. **Site** then embeds the marts and the country geometry into
+   one HTML file. Only D3 is fetched from a CDN; there is no runtime API call.
 
 The pipeline is standard library only. No pandas, no ORM, no third-party runtime dependency —
 a reviewer can read every line that produces a number.
@@ -146,6 +199,7 @@ a reviewer can read every line that produces a number.
 pipeline/
   ingest.py          snapshot fetchers, retry policy, manifest
   build.py           staging, warehouse load, SQL runner, mart export
+  dq.py              the data-quality gate; writes mart_dq.csv, exits 1 on a failure
   site.py            payload assembly and HTML render
 models/
   10_int_country_portfolio.sql
@@ -155,23 +209,28 @@ models/
   21_mart_sector.sql
   22_mart_region.sql
   23_mart_portfolio_health.sql
+  24_mart_portfolio_performance.sql  status, cohort, duration, concentration
   25_mart_country_gap.sql      percentile ranks, allocation gap
   26_mart_priority.sql         the short list
+  27_mart_reallocation.sql     one scenario row: pool, donors, recipients, per-person figures
 docs/
   methodology.md      every decision that changes a number
   data_dictionary.md  column-level contract for each table
   sector_taxonomy.md  the 12-group mapping and why it is a rule table
+  data_quality.md     the 13 checks, their thresholds, and what a failure means
+  reallocation-case.md  the five per cent scenario as a one-page business case
   decisions/          ADRs for the choices that had alternatives
   img/                screenshots and the pipeline diagram used above
 sops/
   refresh-data.md     quarterly refresh, step by step
   add-an-indicator.md extending the need index
   review-a-portfolio.md  how the output is used in a review
-tests/test_pipeline.py   reconciliation, bounds and ranking invariants
+tests/test_pipeline.py   31 tests: reconciliation, bounds, ranking, operating profile,
+                         scenario arithmetic and the quality gate
 data/
   raw/                committed snapshots and their manifest
   staging/            generated by build.py, git-ignored
-  marts/              the five published tables
+  marts/              the seven published tables, including mart_dq
   warehouse/          SQLite file, generated, git-ignored
 site/index.html          rendered output
 ```
@@ -185,6 +244,7 @@ reproducible from `pipeline/build.py` in a few seconds and stays out of the repo
 ```bash
 python pipeline/ingest.py          # fetch snapshots (≈2 min, needs network)
 python pipeline/build.py           # staging → warehouse → marts
+python pipeline/dq.py              # 13 checks; non-zero exit stops the build
 python pipeline/site.py            # render site/index.html
 python -m unittest discover -s tests
 ```
@@ -192,13 +252,38 @@ python -m unittest discover -s tests
 or, with the same steps behind one target:
 
 ```bash
-make build && make site && make test
+make all                           # build → dq → site → test
 ```
 
 `ingest.py --sample` pulls a small slice for a fast end-to-end run; `--force` refetches
 everything. The committed `data/raw/` tree is the product of a full run, so `build.py` and
-`site.py` alone reproduce the published figures offline. `make test` depends on `make build`,
-because the tests read the staging tables that the build generates.
+`site.py` alone reproduce the published figures offline. `make test` depends on `make dq`,
+which depends on `make build`: the tests read the staging tables the build generates and the
+quality table the gate writes.
+
+## Data quality
+
+<p align="center">
+  <img src="docs/img/dq.png" alt="The data-quality table on the page: 13 checks, all passing" width="880">
+</p>
+
+Thirteen checks run between the build and the render, and the page prints their result rather
+than inviting the reader to trust the pipeline. They fall into five kinds:
+
+- **Integrity** — one row per project, every country link resolving to a known ISO-3.
+- **Reconciliation** — split commitments summing back to the register total, the country layer
+  agreeing with the portfolio total to within 0.5%, and the operating buckets partitioning the
+  book.
+- **Coverage and completeness floors** — 83.4% of register records retained, 80.2% of operations
+  with an approval date, 80.1% of value classified, 171 countries with a need index.
+- **Bounds** — the allocation gap staying inside its construction range.
+- **Scenario consistency** — the pool equalling its stated share of live value, so the slider
+  and the static text cannot drift apart.
+
+Floors sit below the observed value on purpose (83.4% against a 75% floor), so a real
+regression trips the gate while ordinary snapshot-to-snapshot variance does not. Every threshold
+and its reasoning is in [`docs/data_quality.md`](docs/data_quality.md); a failure names the two
+layers being compared and stops CI before the page is regenerated.
 
 ## Method, in one page
 
@@ -226,6 +311,17 @@ are recorded during the build rather than dropped silently.
 and a binning method that splits tie groups would label an unfunded country "middle". The
 detail, and the alternatives rejected, is in `docs/decisions/`.
 
+**Operating profile.** The same operations read four ways — status, approval cohort, planned
+duration band, concentration — with each dimension partitioning the book, so the shares add to
+one and every operation lands in exactly one bucket. Unclassified cases (no status, no approval
+date, no usable duration) are their own bucket rather than an imputed middle.
+
+**Scenario.** The pool is a share of active commitment, raised pro rata from countries with a
+negative allocation gap and a live portfolio, and paid pro rata to population across the 25
+short-listed countries. Gains per person are therefore identical by construction, which is
+stated as a property of the formula rather than presented as a finding. Commitment is the base,
+not disbursement, because the register does not publish disbursement.
+
 ## What this cannot tell you
 
 1. **Commitment is not disbursement.** Value here is approved financing, not money that reached
@@ -238,6 +334,9 @@ detail, and the alternatives rejected, is in `docs/decisions/`.
    the tables and absent from the map.
 5. **Two clocks.** Portfolio data is administrative and revised continuously; SDG series are
    statistical and lag by years. The join is a snapshot, not a time series.
+6. **The scenario is arithmetic, not advice.** It moves commitment, not disbursements, and it
+   is silent on absorption capacity — a country that cannot spend its current portfolio will not
+   spend a larger one faster.
 
 ## Data provenance
 

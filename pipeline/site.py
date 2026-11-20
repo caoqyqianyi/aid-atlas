@@ -143,6 +143,9 @@ def build_payload() -> dict:
     sectors = load_csv("mart_sector")
     regions = load_csv("mart_region")
     priority = load_csv("mart_priority")
+    performance = load_csv("mart_portfolio_performance")
+    scenario = load_csv("mart_reallocation")[0]
+    dq = load_csv("mart_dq")
 
     rows = []
     for row in countries:
@@ -214,6 +217,44 @@ def build_payload() -> dict:
         "thresholds": {
             "need": tercile_thresholds([r["need"] for r in rows if r["complete"] == 1]),
             "pc": tercile_thresholds([r["pc"] for r in rows if r["complete"] == 1]),
+        },
+        "performance": {
+            dim: [
+                {
+                    "bucket": r["bucket"],
+                    "ops": int(num(r["n_ops"], 0)),
+                    "value": round(num(r["value"], 0)),
+                    "share_ops": num(r["share_ops"], 0.0),
+                    "share_value": num(r["share_value"], 0.0),
+                    "active_share": num(r["active_share"], None),
+                }
+                for r in performance if r["dimension"] == dim
+            ]
+            for dim in ("status", "cohort", "duration", "concentration")
+        },
+        "reallocation": {
+            "share": num(scenario["share"], 0.05),
+            "pool": round(num(scenario["pool_usd"], 0)),
+            "n_donors": int(num(scenario["n_donors"], 0)),
+            "n_recipients": int(num(scenario["n_recipients"], 0)),
+            "recipient_population": round(num(scenario["recipient_population"], 0)),
+            "donor_population": round(num(scenario["donor_population"], 0)),
+            "gain_pc": num(scenario["gain_per_person"], 0.0),
+            "donor_loss_pc": num(scenario["donor_loss_per_person"], 0.0),
+            "total_active": round(num(health.get("active_value_usd"), 0)),
+        },
+        "dq": {
+            "checks": [
+                {
+                    "check": r["check"],
+                    "category": r["category"],
+                    "detail": r["detail"],
+                    "status": r["status"],
+                }
+                for r in dq
+            ],
+            "passed": sum(1 for r in dq if r["status"] == "PASS"),
+            "total": len(dq),
         },
         "positive_gap": sum(1 for r in rows if (r["gap"] or 0) > 0),
         "palette": bivariate_colours(),
@@ -366,6 +407,23 @@ TEMPLATE = r"""<!doctype html>
   .pbar{height:6px;background:#e8eaec;position:relative}
   .pbar span{position:absolute;left:0;top:0;bottom:0;background:var(--blue)}
   .two{display:grid;grid-template-columns:1.05fr .95fr;gap:2.6rem;align-items:start}
+  .three{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;align-items:start}
+
+  /* ---------- operating profile and scenario ---------- */
+  .scenario{display:grid;grid-template-columns:1.1fr .9fr;gap:2.2rem;padding:1.5rem 1.6rem 1.4rem;
+            margin-top:2.2rem;border-top:3px solid var(--amber)}
+  .scenario h3{margin:.12rem 0 .5rem}
+  .slider{width:100%;margin:1.2rem 0 .35rem;accent-color:var(--navy)}
+  .slider-labels{display:flex;justify-content:space-between;align-items:baseline;font-size:.7rem;color:var(--muted)}
+  .slider-labels b{color:var(--navy);font-weight:600}
+  .skpi{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem 1.5rem;align-content:start}
+  .skpi .lab{font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .skpi .num{font-size:1.32rem;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums;
+             line-height:1.3}
+  .skpi .unit{font-size:.7rem;color:var(--muted)}
+  .pill{display:inline-block;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+        padding:.1rem .38rem;border:1px solid #cfe0d5;background:#eef4f0;color:#2f5d3f}
+  .pill.bad{border-color:#e6cfc7;background:#faf0ed;color:#8a3b22}
 
   /* ---------- method ---------- */
   .method{display:grid;grid-template-columns:1fr 1fr;gap:2.6rem}
@@ -385,7 +443,7 @@ TEMPLATE = r"""<!doctype html>
   @media (max-width:900px){
     .stats .in{grid-template-columns:repeat(2,1fr)}
     .tile:nth-child(2){border-right:0}
-    .two,.method,footer .in{grid-template-columns:1fr}
+    .two,.three,.method,.scenario,footer .in{grid-template-columns:1fr}
     nav{display:none} h1{font-size:1.85rem}
   }
 </style>
@@ -519,8 +577,63 @@ TEMPLATE = r"""<!doctype html>
   </div>
 </section>
 
-<section class="sec" id="method">
+<section class="sec" id="operating">
   <div class="sec-head"><div class="sec-no">05</div>
+    <div><h2>How the book behaves</h2></div></div>
+  <p class="minor">The same snapshot read as an operating profile rather than a map: what is still live,
+  when the live work was approved, how long operations are planned to run, and how much of the value
+  sits in a handful of operations.</p>
+  <div class="three">
+    <div>
+      <h4>Status mix</h4>
+      <table class="data" id="statustable">
+        <thead><tr><th>Status</th><th style="width:30%">Share of value</th>
+        <th style="text-align:right">%</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="note">Pipeline and dropped entries are counted rather than hidden: they are the
+      queue a portfolio review inherits.</div>
+    </div>
+    <div>
+      <h4>Planned duration</h4>
+      <table class="data" id="durationtable">
+        <thead><tr><th>Band</th><th style="width:30%">Share of value</th>
+        <th style="text-align:right">%</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="note">Board approval to scheduled closing date. Operations without both dates stay
+      in their own bucket instead of being imputed.</div>
+    </div>
+    <div>
+      <h4>Approval cohorts</h4>
+      <table class="data" id="cohorttable">
+        <thead><tr><th>Cohort</th><th style="text-align:right">Share of value</th>
+        <th style="text-align:right">Still live</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="note">Share of each cohort's value that is still active at the snapshot date.</div>
+    </div>
+  </div>
+
+  <div class="card scenario">
+    <div>
+      <div class="grp"><span class="cap">Scenario</span></div>
+      <h3>What a reallocation would buy</h3>
+      <p class="minor">Move a share of live value from the countries already better financed than their
+      measured need to the 25 on the short list. The pool is raised pro rata from the donors and paid
+      pro rata to population, so the gain per person is identical in every recipient.</p>
+      <input class="slider" id="share" type="range" min="0" max="10" step="0.5" value="5"
+             aria-label="Share of active value reallocated">
+      <div class="slider-labels"><span>0%</span>
+        <span><b id="share-out">5% of live value</b></span><span>10%</span></div>
+      <p class="note" id="scen-note"></p>
+    </div>
+    <div class="skpi" id="scen-stats"></div>
+  </div>
+</section>
+
+<section class="sec" id="method">
+  <div class="sec-head"><div class="sec-no">06</div>
     <div><h2>Method, and what this cannot tell you</h2></div></div>
   <div class="method">
     <div>
@@ -549,6 +662,14 @@ TEMPLATE = r"""<!doctype html>
       </ol>
     </div>
   </div>
+
+  <h3 style="margin-top:2.4rem">Data quality</h3>
+  <p class="minor">Every check below runs in <code>pipeline/dq.py</code> between the build and the
+  render, and the build stops if one of them fails. <span id="dq-summary"></span></p>
+  <table class="data" id="dqtable">
+    <thead><tr><th>Check</th><th>What the number says</th><th style="text-align:right">Status</th></tr></thead>
+    <tbody></tbody>
+  </table>
 </section>
 
 </div>
@@ -863,6 +984,77 @@ const ht = document.querySelector('#healthtable tbody');
     (isRatio ? (v * 100).toFixed(0) + '%' : v.toFixed(2)) + '</td>';
   ht.appendChild(tr);
 });
+
+/* ---------- operating profile ---------- */
+(function operatingProfile(){
+  const dims = DATA.performance;
+  const bar = d => '<td><div class="pbar"><span style="width:' +
+    Math.min(100, (d.share_value || 0) * 100).toFixed(1) + '%"></span></div></td>';
+  const pct = d => (d.share_value * 100).toFixed(1) + '%';
+  function fill(sel, dim, row){
+    const el = document.querySelector(sel);
+    (dims[dim] || []).forEach(d => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = row(d);
+      el.appendChild(tr);
+    });
+  }
+  fill('#statustable tbody', 'status', d =>
+    '<td>' + d.bucket + '</td>' + bar(d) +
+    '<td style="text-align:right">' + pct(d) + '</td>');
+  fill('#durationtable tbody', 'duration', d =>
+    '<td>' + d.bucket + '</td>' + bar(d) +
+    '<td style="text-align:right">' + pct(d) + '</td>');
+  fill('#cohorttable tbody', 'cohort', d =>
+    '<td>' + d.bucket + '</td>' +
+    '<td style="text-align:right">' + pct(d) + '</td>' +
+    '<td style="text-align:right">' +
+    (d.active_share === null ? '-' : (d.active_share * 100).toFixed(0) + '%') + '</td>');
+})();
+
+/* ---------- reallocation scenario ---------- */
+(function reallocation(){
+  const s = DATA.reallocation;
+  const slider = document.getElementById('share');
+  const out = document.getElementById('share-out');
+  const stats = document.getElementById('scen-stats');
+  const note = document.getElementById('scen-note');
+  function draw(share){
+    const pool = share / 100 * s.total_active;
+    const gain = pool / s.recipient_population;
+    const loss = pool / s.donor_population;
+    out.textContent = share + '% of live value';
+    stats.innerHTML =
+      '<div><div class="lab">Value moved</div><div class="num">' + fmtUSD(pool) + '</div>' +
+      '<div class="unit">of ' + fmtUSD(s.total_active) + ' still live</div></div>' +
+      '<div><div class="lab">Gain per person</div><div class="num">$' + gain.toFixed(2) + '</div>' +
+      '<div class="unit">in the ' + s.n_recipients + ' short-listed countries</div></div>' +
+      '<div><div class="lab">Cost per person</div><div class="num">$' + loss.toFixed(2) + '</div>' +
+      '<div class="unit">across the ' + s.n_donors + ' donor countries</div></div>' +
+      '<div><div class="lab">People covered</div><div class="num">' +
+      (s.recipient_population / 1e6).toFixed(0) + 'm</div>' +
+      '<div class="unit">recipient population</div></div>';
+    note.textContent = 'The memo and the README quote the 5% case: ' + fmtUSD(s.pool) +
+      ' moved, $' + s.gain_pc.toFixed(2) + ' per person. Arithmetic on this snapshot, not a proposal.';
+  }
+  slider.addEventListener('input', () => draw(parseFloat(slider.value)));
+  draw(parseFloat(slider.value));
+})();
+
+/* ---------- data quality ---------- */
+(function dataQuality(){
+  const d = DATA.dq;
+  const tb = document.querySelector('#dqtable tbody');
+  d.checks.forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + c.check + '</td><td>' + c.detail + '</td>' +
+      '<td style="text-align:right"><span class="pill' +
+      (c.status === 'PASS' ? '' : ' bad') + '">' + c.status + '</span></td>';
+    tb.appendChild(tr);
+  });
+  document.getElementById('dq-summary').textContent =
+    d.passed + ' of ' + d.total + ' checks pass on the committed snapshot.';
+})();
 
 renderLegend();
 </script>

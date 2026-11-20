@@ -1,8 +1,8 @@
 PY ?= python3
 
-.PHONY: all ingest build site test clean
+.PHONY: all ingest build dq site test clean
 
-all: build site test
+all: build dq site test
 
 ingest:
 	$(PY) pipeline/ingest.py
@@ -10,10 +10,13 @@ ingest:
 build:
 	$(PY) pipeline/build.py
 
+dq: build
+	$(PY) pipeline/dq.py
+
 site:
 	$(PY) pipeline/site.py
 
-test: build
+test: dq
 	$(PY) -m unittest discover -s tests
 
 clean:

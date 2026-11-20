@@ -16,6 +16,8 @@ jobs:
           python-version: "3.11"
       - name: Rebuild marts from the committed snapshots
         run: python pipeline/build.py
+      - name: Run the data quality gate
+        run: python pipeline/dq.py
       - name: Render the site
         run: python pipeline/site.py
       - name: Test

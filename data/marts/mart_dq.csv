@@ -1,0 +1,14 @@
+check_id,category,check,value,threshold,status,detail
+dq_01,Integrity,One row per project in staging,0,= 0,PASS,"18,917 operations"
+dq_02,Integrity,Country links resolve to a known country,0,= 0,PASS,every link has an ISO-3 in the reference table
+dq_03,Reconciliation,Split amounts equal the register total,0.0,< 0.01 USD,PASS,commitments split across recipients sum back to the whole
+dq_04,Reconciliation,Country layer equals the portfolio total,0.0,< 0.5%,PASS,sum of country commitments vs mart_portfolio_health
+dq_05,Reconciliation,Active value agrees across layers,0.0,< 0.5%,PASS,mart_country vs mart_portfolio_health
+dq_06,Coverage,Register records retained in staging,0.834414,>= 0.75,PASS,"18,917 of 22,671 records; the remainder carry no resolvable country code, are regional entries or repeat across pages"
+dq_07,Completeness,Operations with an approval date,0.80166,>= 0.75,PASS,"3,752 of 18,917 operations carry no approval date"
+dq_08,Completeness,Value with a sector classification,0.800884,>= 0.75,PASS,19.9% of value is unclassified
+dq_09,Coverage,Countries with a measured need index,171,>= 150,PASS,171 of 217 countries carry the index
+dq_10,Bounds,"Allocation gap inside [-1, 1]",0.9647,<= 1.0,PASS,largest absolute gap 0.96
+dq_11,Uniqueness,Short-list ranks are 1..25 without gaps,25,"= 25, all distinct",PASS,"25 rows, ranks 1 to 25"
+dq_12,Scenario,Scenario pool equals its stated share of active value,0.0,< 1%,PASS,mart_reallocation vs mart_portfolio_health
+dq_13,Reconciliation,Operating profile buckets sum to the portfolio,0.0,< 0.01 USD,PASS,status buckets are exhaustive by construction

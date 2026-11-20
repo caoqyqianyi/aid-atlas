@@ -137,5 +137,103 @@ class TestMarts(unittest.TestCase):
             self.assertNotIn(metrics[key], ("", "None"))
 
 
+class TestOperatingProfile(unittest.TestCase):
+    """The operating profile must describe the same book as the health mart."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.perf = read_csv(ROOT / "data" / "marts" / "mart_portfolio_performance.csv")
+        cls.health = {row["metric"]: float(row["value"])
+                      for row in read_csv(ROOT / "data" / "marts" / "mart_portfolio_health.csv")}
+
+    def dim(self, name):
+        return [row for row in self.perf if row["dimension"] == name]
+
+    def test_status_buckets_sum_to_the_portfolio_total(self):
+        total = sum(float(row["value"]) for row in self.dim("status"))
+        self.assertAlmostEqual(total, self.health["total_value_usd"], delta=1.0)
+
+    def test_every_dimension_covers_every_operation(self):
+        for name in ("status", "cohort", "duration"):
+            count = sum(int(row["n_ops"]) for row in self.dim(name))
+            self.assertEqual(count, int(self.health["total_operations"]),
+                             f"{name} buckets do not cover the book")
+
+    def test_shares_add_up_to_one(self):
+        for name in ("status", "cohort", "duration"):
+            share = sum(float(row["share_value"]) for row in self.dim(name))
+            self.assertAlmostEqual(share, 1.0, delta=0.01)
+
+    def test_concentration_is_monotonic(self):
+        values = [float(row["value"]) for row in self.dim("concentration")]
+        self.assertEqual(values, sorted(values))
+        self.assertLessEqual(values[-1], self.health["total_value_usd"] + 1)
+
+    def test_active_share_within_bounds(self):
+        for row in self.perf:
+            if row["active_share"] in ("", "None"):
+                continue
+            self.assertGreaterEqual(float(row["active_share"]), 0)
+            self.assertLessEqual(float(row["active_share"]), 1)
+
+
+class TestReallocation(unittest.TestCase):
+    """The scenario row and the arithmetic the page runs must agree."""
+
+    @classmethod
+    def setUpClass(cls):
+        rows = read_csv(ROOT / "data" / "marts" / "mart_reallocation.csv")
+        if not rows:
+            raise unittest.SkipTest("empty scenario table")
+        cls.scn = rows[0]
+        cls.countries = read_csv(ROOT / "data" / "marts" / "mart_country.csv")
+        cls.priority = read_csv(ROOT / "data" / "marts" / "mart_priority.csv")
+        cls.total_active = sum(float(c["active_commitment"] or 0) for c in cls.countries)
+        cls.donors = [c for c in cls.countries
+                      if float(c["active_commitment"] or 0) > 0
+                      and float(c["allocation_gap"] or 0) < 0]
+        cls.donor_pop = sum(float(c["population"] or 0) for c in cls.donors)
+        cls.recipient_pop = sum(float(c["population"] or 0) for c in cls.priority)
+
+    def test_pool_is_the_stated_share_of_live_value(self):
+        share = float(self.scn["share"])
+        self.assertAlmostEqual(float(self.scn["pool_usd"]), share * self.total_active, delta=1.0)
+
+    def test_donor_and_recipient_sets_are_as_declared(self):
+        self.assertEqual(int(self.scn["n_donors"]), len(self.donors))
+        self.assertEqual(int(self.scn["n_recipients"]), len(self.priority))
+        self.assertAlmostEqual(float(self.scn["donor_population"]), self.donor_pop, delta=1.0)
+        self.assertAlmostEqual(float(self.scn["recipient_population"]), self.recipient_pop, delta=1.0)
+
+    def test_gain_and_cost_per_person_follow_the_page_formula(self):
+        pool = float(self.scn["pool_usd"])
+        self.assertAlmostEqual(float(self.scn["gain_per_person"]) / (pool / self.recipient_pop),
+                               1.0, places=6)
+        self.assertAlmostEqual(float(self.scn["donor_loss_per_person"]) / (pool / self.donor_pop),
+                               1.0, places=6)
+
+    def test_scenario_pool_is_smaller_than_live_value(self):
+        self.assertLess(float(self.scn["pool_usd"]), self.total_active)
+
+
+class TestDataQuality(unittest.TestCase):
+    """A failed check must not be silently absorbed by the render step."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.checks = read_csv(ROOT / "data" / "marts" / "mart_dq.csv")
+
+    def test_every_check_passes_on_the_committed_snapshot(self):
+        failing = [c["check_id"] for c in self.checks if c["status"] != "PASS"]
+        self.assertEqual(failing, [], f"failing checks: {failing}")
+
+    def test_check_ids_are_unique(self):
+        ids = [c["check_id"] for c in self.checks]
+        self.assertEqual(len(ids), len(set(ids)))
+
+    def test_the_check_suite_is_not_silently_shrinking(self):
+        self.assertGreaterEqual(len(self.checks), 12)
+
+
 if __name__ == "__main__":
     unittest.main()
