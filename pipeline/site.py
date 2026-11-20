@@ -64,6 +64,9 @@ def bivariate_colours() -> dict[str, str]:
     }
 
 
+SOVEREIGN_UNITS = {"TWN": "CHN"}
+
+
 def simplify_geometry(path: Path) -> dict:
     """Keep two properties and round coordinates to roughly 1 km.
 
@@ -85,6 +88,10 @@ def simplify_geometry(path: Path) -> dict:
             iso3 = str(props.get("ADM0_A3") or "")
         if not iso3:
             continue
+        # Cartographic convention: one China. Taiwan is drawn at this scale as a
+        # separate island polygon, so it is keyed to the China feature instead of
+        # standing as its own unit; Hong Kong and Macau have no polygon at 1:110m.
+        iso3 = SOVEREIGN_UNITS.get(iso3, iso3)
         features.append(
             {
                 "type": "Feature",
@@ -246,6 +253,7 @@ TEMPLATE = r"""<!doctype html>
     --band:#f6f7f8;--paper:#ffffff;
   }
   *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
   html,body{margin:0;padding:0;background:var(--paper);color:var(--ink)}
   body{font-family:"Open Sans","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
        font-size:15px;line-height:1.67;-webkit-font-smoothing:antialiased}
@@ -304,6 +312,7 @@ TEMPLATE = r"""<!doctype html>
 
   /* ---------- sections ---------- */
   section.sec{padding:3.4rem 0 .4rem}
+  section{scroll-margin-top:76px}
   .sec-head{display:flex;align-items:flex-start;gap:.9rem;margin-bottom:1.2rem;border-bottom:1px solid var(--rule);
             padding-bottom:.75rem}
   .sec-no{font-size:.68rem;letter-spacing:.14em;color:var(--amber);font-weight:700;padding-top:.55rem}
@@ -361,6 +370,7 @@ TEMPLATE = r"""<!doctype html>
   /* ---------- method ---------- */
   .method{display:grid;grid-template-columns:1fr 1fr;gap:2.6rem}
   .note{font-size:.78rem;color:var(--muted);max-width:76ch}
+  #qcount{white-space:nowrap;color:#a85c10;font-weight:600}
   .brief li{margin:.5rem 0;max-width:72ch}
 
   /* ---------- footer ---------- */
@@ -704,6 +714,28 @@ function renderLegend(){
     'thin-portfolio corner; dark slate is high need with a large book, the case a quadrant view ' +
     'hides.</div>';
 }
+
+const navLinks = [...document.querySelectorAll('nav a')];
+const navSections = navLinks
+  .map(a => document.getElementById(a.getAttribute('href').slice(1)))
+  .filter(Boolean);
+
+function highlightNav(id){
+  navLinks.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + id));
+}
+navLinks.forEach(a => a.addEventListener('click', () => {
+  highlightNav(a.getAttribute('href').slice(1));
+}));
+function syncNav(){
+  let current = navSections[0].id;
+  for (const sec of navSections){
+    if (sec.getBoundingClientRect().top <= 140) current = sec.id;
+  }
+  highlightNav(current);
+}
+window.addEventListener('scroll', syncNav, {passive: true});
+window.addEventListener('resize', syncNav);
+syncNav();
 
 document.querySelectorAll('#modes button').forEach(btn => {
   btn.addEventListener('click', () => {
