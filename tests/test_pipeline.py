@@ -235,5 +235,25 @@ class TestDataQuality(unittest.TestCase):
         self.assertGreaterEqual(len(self.checks), 12)
 
 
+class TestRenderedPage(unittest.TestCase):
+    """The page is the deliverable, so its structure is asserted, not assumed."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.html = (ROOT / "site" / "index.html").read_text(encoding="utf-8")
+
+    def test_sections_render_in_order(self):
+        ids = ["overview", "countries", "portfolio", "operating", "method"]
+        positions = [self.html.index('id="%s"' % i) for i in ids]
+        self.assertEqual(positions, sorted(positions))
+
+    def test_search_has_a_result_list(self):
+        self.assertIn('id="results"', self.html)
+        self.assertIn("playSearch", self.html)
+
+    def test_payload_is_embedded_once(self):
+        self.assertEqual(self.html.count("const DATA = "), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -328,6 +328,19 @@ TEMPLATE = r"""<!doctype html>
         border:1.5px solid #9aa0a6;border-radius:50%}
   .search .ico::after{content:"";position:absolute;left:8px;top:8px;width:6px;height:1.5px;
         background:#9aa0a6;transform:rotate(45deg);transform-origin:left center}
+  .results{position:absolute;left:auto;right:0;top:38px;min-width:252px;background:#fff;border:1px solid var(--rule);
+        box-shadow:0 10px 26px rgba(0,34,68,.14);max-height:320px;overflow:auto;display:none;z-index:35}
+  .results.on{display:block}
+  .results .row{display:flex;align-items:baseline;gap:.45rem;padding:.42rem .62rem .44rem;
+        border-bottom:1px solid var(--hair);cursor:pointer}
+  .results .row:last-child{border-bottom:0}
+  .results .row:hover,.results .row.sel{background:#f4f7f9}
+  .results .nm{font-size:.78rem;color:var(--navy);font-weight:600}
+  .results .tag{font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:#a2701c;
+        border:1px solid #e8cf9d;padding:0 .24rem}
+  .results .mt{margin-left:auto;font-size:.7rem;color:var(--muted);font-variant-numeric:tabular-nums}
+  .results .empty{padding:.55rem .62rem;font-size:.74rem;color:var(--muted)}
+  .note.center{text-align:center;max-width:82ch;margin:1rem auto 0}
 
   /* ---------- hero ---------- */
   .hero{background:var(--navy);color:#fff}
@@ -386,13 +399,17 @@ TEMPLATE = r"""<!doctype html>
   .mapwrap{position:relative}
   svg{display:block;width:100%;height:auto}
   .country{stroke:#fff;stroke-width:.6px;cursor:pointer}
-  #tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--rule);
+  #tip,#ctip{background:#fff;border:1px solid var(--rule);
     box-shadow:0 8px 22px rgba(0,34,68,.13);padding:.6rem .75rem;font-size:.76rem;min-width:196px;
     opacity:0;transition:opacity .12s;line-height:1.45;z-index:20}
-  #tip .n{font-weight:600;font-size:.88rem;color:var(--navy)}
-  #tip .r{color:var(--muted);font-size:.7rem;margin-bottom:.35rem}
-  #tip dl{display:grid;grid-template-columns:auto auto;gap:.14rem .7rem;margin:0}
-  #tip dt{color:var(--muted)} #tip dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+  #tip{position:absolute;pointer-events:none}
+  #ctip{position:fixed;z-index:40;pointer-events:none;transition:none}
+  #tip .n,#ctip .n{font-weight:600;font-size:.88rem;color:var(--navy)}
+  #tip .r,#ctip .r{color:var(--muted);font-size:.7rem;margin-bottom:.35rem}
+  #tip dl,#ctip dl{display:grid;grid-template-columns:auto auto;gap:.14rem .7rem;margin:0}
+  #tip dt,#ctip dt{color:var(--muted)}
+  #tip dd,#ctip dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+  table.data tbody tr.hit td{background:#fdf3dd}
   .scatterwrap{border:1px solid var(--rule);margin-top:.6rem}
 
   /* ---------- tables ---------- */
@@ -461,7 +478,9 @@ TEMPLATE = r"""<!doctype html>
       <a href="#method">Method</a>
     </nav>
     <div class="search"><span class="ico"></span>
-      <input id="q" type="text" placeholder="Search a country" autocomplete="off">
+      <input id="q" type="text" placeholder="Search 217 countries" autocomplete="off"
+        aria-label="Search a country" aria-expanded="false">
+      <div class="results" id="results" role="listbox"></div>
     </div>
   </div>
 </div>
@@ -490,6 +509,7 @@ TEMPLATE = r"""<!doctype html>
 </div>
 
 <div class="wrap">
+<div id="ctip"></div>
 
 <section class="sec" id="countries">
   <div class="sec-head"><div class="sec-no">01</div>
@@ -523,8 +543,8 @@ TEMPLATE = r"""<!doctype html>
     <div id="tip"></div>
     <svg id="map" viewBox="0 0 1000 520" role="img" aria-label="World map of portfolio against need"></svg>
   </div>
-  <p class="note">Grey areas have no polygon at the 1:110m simplification, or no measured need.
-  Small island states missing from the polygon set are still in the table and in
+  <p class="note center">Grey areas have no polygon at the 1:110m simplification, or no measured
+  need. Small island states missing from the polygon set are still in the table and in
   <code>data/marts/mart_country.csv</code>.</p>
 </section>
 
@@ -537,6 +557,9 @@ TEMPLATE = r"""<!doctype html>
   person.</p>
   <div class="card scatterwrap"><svg id="scatter" viewBox="0 0 1000 460" role="img"
     aria-label="Scatterplot of need against financing per person"></svg></div>
+  <p class="note" id="scattercap">Hover a point for its figures; click one to find it in the short
+  list. Points sit at the smallest positive financing value when a country has no active
+  operations.</p>
 </section>
 
 <section class="sec">
@@ -907,14 +930,58 @@ document.querySelectorAll('#filters button').forEach(btn => {
     .attr('text-anchor', 'middle').attr('font-size', 11.5).attr('fill', '#6f7377')
     .text('Unmet SDG need (index 0-100)');
 
+  const rad = d => d.quadrant === 'high need / thin portfolio' ? 5 : 3.2;
+  const ctip = document.getElementById('ctip');
+  const cardHtml = d => {
+    const rows = [
+      ['Need index', d.need ? d.need.toFixed(1) + ' / 100' : 'no data'],
+      ['Financing / person', d.pc ? '$' + d.pc.toFixed(1) : 'no active operations'],
+      ['Allocation gap', d.gap == null ? 'not ranked' :
+        (d.gap > 0 ? '+' : '') + d.gap.toFixed(2)],
+      ['Operations', fmt(d.ops)]
+    ];
+    return '<div class="n">' + d.name + '</div>' +
+      '<div class="r">' + (d.region || '') + (d.income ? ' &middot; ' + d.income : '') + '</div>' +
+      '<dl>' + rows.map(r => '<dt>' + r[0] + '</dt><dd>' + r[1] + '</dd>').join('') + '</dl>';
+  };
+  const placeCard = event => {
+    const pad = 16, w = ctip.offsetWidth, h = ctip.offsetHeight;
+    let cx = event.clientX + pad, cy = event.clientY + pad;
+    if (cx + w > window.innerWidth - 8) cx = event.clientX - w - pad;
+    if (cy + h > window.innerHeight - 8) cy = event.clientY - h - pad;
+    ctip.style.left = cx + 'px';
+    ctip.style.top = cy + 'px';
+  };
   g.selectAll('circle').data(pts).join('circle')
     .attr('cx', d => x(Math.max(d.pc, floor)))
     .attr('cy', d => y(d.need))
-    .attr('r', d => d.quadrant === 'high need / thin portfolio' ? 5 : 3.2)
+    .attr('r', rad)
     .attr('fill', d => d.quadrant === 'high need / thin portfolio' ? '#c9791f' : '#004a78')
     .attr('stroke', '#ffffff')
     .attr('stroke-width', .8)
-    .attr('opacity', .9);
+    .attr('opacity', .9)
+    .style('cursor', 'pointer')
+    .on('mouseenter', (event, d) => {
+      d3.select(event.currentTarget).attr('r', rad(d) + 2.2).attr('opacity', 1);
+      ctip.innerHTML = cardHtml(d);
+      ctip.style.opacity = '1';
+      placeCard(event);
+    })
+    .on('mousemove', (event) => placeCard(event))
+    .on('mouseleave', (event, d) => {
+      d3.select(event.currentTarget).attr('r', rad(d)).attr('opacity', .9);
+      ctip.style.opacity = '0';
+    })
+    .on('click', (event, d) => {
+      ctip.style.opacity = '0';
+      document.getElementById('scattercap').innerHTML = SHORT.has(d.name)
+        ? '<strong>' + d.name + '</strong> is on the short list; its row is highlighted in section 03.'
+        : '<strong>' + d.name + '</strong> is not on the 25-country short list &mdash; need ' +
+          d.need.toFixed(1) + ', ' +
+          (d.pc ? '$' + d.pc.toFixed(0) + ' per person' : 'no active operations') +
+          (d.gap == null ? '.' : ', gap ' + (d.gap > 0 ? '+' : '') + d.gap.toFixed(2) + '.');
+      playSearch(d.name);
+    });
 
   const labelled = pts.filter(d => d.quadrant === 'high need / thin portfolio')
     .sort((a, b) => b.need - a.need).slice(0, 9);
@@ -939,15 +1006,86 @@ DATA.priority.forEach((d, i) => {
 
 const q = document.getElementById('q');
 const qcount = document.getElementById('qcount');
-q.addEventListener('input', () => {
-  const term = q.value.trim().toLowerCase();
+const results = document.getElementById('results');
+const ALL = DATA.countries.slice().sort((a, b) => a.name.localeCompare(b.name));
+const SHORT = new Map(DATA.priority.map(d => [d.name, d]));
+
+function filterRows(term){
   let hits = 0;
   [...tb.querySelectorAll('tr')].forEach(tr => {
     const hit = !term || tr.dataset.name.toLowerCase().includes(term);
     tr.style.display = hit ? '' : 'none';
     if (hit) hits++;
   });
+  return hits;
+}
+
+function focusRow(name){
+  const row = [...tb.querySelectorAll('tr')].find(tr => tr.dataset.name === name);
+  if (!row) return false;
+  row.scrollIntoView({block: 'center', behavior: 'smooth'});
+  row.classList.add('hit');
+  setTimeout(() => row.classList.remove('hit'), 2600);
+  return true;
+}
+
+function showMatches(term){
+  if (!term){ closeMatches(); return; }
+  const hits = ALL.filter(d => d.name.toLowerCase().includes(term)).slice(0, 8);
+  results.innerHTML = hits.length ? hits.map(d =>
+    '<div class="row" data-name="' + d.name + '">' +
+    '<span class="nm">' + d.name + '</span>' +
+    (SHORT.has(d.name) ? '<span class="tag">short list</span>' : '') +
+    '<span class="mt">' + (d.gap == null ? 'not ranked' :
+      (d.gap > 0 ? '+' : '') + d.gap.toFixed(2)) + '</span></div>').join('')
+    : '<div class="empty">No country matches that name</div>';
+  results.classList.add('on');
+  q.setAttribute('aria-expanded', 'true');
+}
+
+function closeMatches(){
+  results.classList.remove('on');
+  q.setAttribute('aria-expanded', 'false');
+}
+
+function playSearch(name){
+  q.value = name;
+  const hits = filterRows(name.toLowerCase());
+  closeMatches();
+  if (focusRow(name)){
+    qcount.textContent = hits + (hits === 1 ? ' match' : ' matches');
+  } else {
+    qcount.textContent = name + ' is not on the 25-country short list';
+  }
+}
+
+q.addEventListener('input', () => {
+  const term = q.value.trim().toLowerCase();
+  const hits = filterRows(term);
   qcount.textContent = term ? hits + (hits === 1 ? ' match' : ' matches') : '';
+  showMatches(term);
+});
+results.addEventListener('mousedown', e => {
+  const row = e.target.closest('.row');
+  if (!row) return;
+  e.preventDefault();
+  playSearch(row.dataset.name);
+});
+q.addEventListener('keydown', e => {
+  if (e.key === 'Enter'){
+    e.preventDefault();
+    const first = results.querySelector('.row');
+    if (first) playSearch(first.dataset.name);
+  } else if (e.key === 'Escape'){
+    q.value = '';
+    filterRows('');
+    qcount.textContent = '';
+    closeMatches();
+  }
+});
+q.addEventListener('blur', () => setTimeout(closeMatches, 150));
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search')) closeMatches();
 });
 
 const st = document.querySelector('#sectortable tbody');
