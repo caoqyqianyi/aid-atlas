@@ -92,14 +92,17 @@ miss, countries with high need and a portfolio too large to be called thin.</em>
 
 The country box in the header searches all 217 countries, not just the 25 on the short list.
 A dropdown opens under it as you type, each entry carrying its allocation gap and a
-`short list` tag where it applies; choosing one filters the table, scrolls to the row and
-highlights it. The count next to the paragraph keeps the filter legible rather than silent:
+`short list` tag where it applies:
 
 <p align="center">
-  <img src="docs/img/search.png" alt="Country search filtered to Chad in the short list" width="860">
+  <img src="docs/img/search.png" alt="The header search box open on congo, two matches, the short-list one tagged" width="860">
 </p>
 
-<p align="center"><em>Typing <code>chad</code> leaves one row out of 25 and states the count.</em></p>
+<p align="center"><em>Typing <code>congo</code>: two matches, the short-listed one tagged and both
+carrying their allocation gap.</em></p>
+
+Choosing an entry filters the table, scrolls to the row and highlights it; the count under the
+paragraph heading keeps the filter legible rather than silent.
 
 Three further elements carry the rest of the analysis: a scatter of need against financing per
 person with the review corner shaded, a sector table with shares of classified value, and a
