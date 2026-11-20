@@ -72,7 +72,7 @@ def fetch_json(url: str, params: dict, retries: int = 4) -> dict:
     full = f"{url}?{query}"
     for attempt in range(1, retries + 1):
         try:
-            req = urllib.request.Request(full, headers={"User-Agent": "portfolio-lens/0.1 (research)"})
+            req = urllib.request.Request(full, headers={"User-Agent": "aid-atlas/0.1 (research)"})
             with urllib.request.urlopen(req, timeout=90) as resp:
                 return json.loads(resp.read().decode("utf-8"))
         except (urllib.error.URLError, http.client.HTTPException, TimeoutError,
@@ -87,7 +87,7 @@ def fetch_json(url: str, params: dict, retries: int = 4) -> dict:
 
 
 def fetch_text(url: str) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": "portfolio-lens/0.1 (research)"})
+    req = urllib.request.Request(url, headers={"User-Agent": "aid-atlas/0.1 (research)"})
     with urllib.request.urlopen(req, timeout=90) as resp:
         return resp.read().decode("utf-8")
 

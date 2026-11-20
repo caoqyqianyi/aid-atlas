@@ -1,4 +1,4 @@
-# portfolio-lens
+# Aid Atlas
 
 **Where development finance is delivered, and where it is needed.**
 
@@ -6,7 +6,7 @@
 [![SQL](https://img.shields.io/badge/marts-SQLite-2f5d7c?style=flat-square)](https://sqlite.org/)
 [![Dependencies](https://img.shields.io/badge/runtime%20deps-none-e9e3d1?style=flat-square)](#running-it)
 [![Tests](https://img.shields.io/badge/tests-34%20passing-6b8f71?style=flat-square)](#running-it)
-[![CI](https://github.com/caoqyqianyi/portfolio-lens/actions/workflows/ci.yml/badge.svg)](https://github.com/caoqyqianyi/portfolio-lens/actions/workflows/ci.yml)
+[![CI](https://github.com/caoqyqianyi/aid-atlas/actions/workflows/ci.yml/badge.svg)](https://github.com/caoqyqianyi/aid-atlas/actions/workflows/ci.yml)
 [![Licence](https://img.shields.io/badge/licence-MIT-6b6f66?style=flat-square)](LICENSE)
 
 A reproducible pipeline that places a sovereign development portfolio on the same axis as
@@ -14,7 +14,7 @@ measured service need, and ranks the countries where the two diverge. It is buil
 management instrument — a defensible review population for portfolio performance work —
 rather than as a map, and the geospatial layer is a reading aid, not the answer.
 
-**Live dashboard:** [caoqyqianyi.github.io/portfolio-lens](https://caoqyqianyi.github.io/portfolio-lens/)
+**Live dashboard:** [caoqyqianyi.github.io/aid-atlas](https://caoqyqianyi.github.io/aid-atlas/)
 
 <p align="center">
   <img src="docs/img/dashboard.png" alt="The dashboard: headline figures and the allocation-gap map" width="900">
