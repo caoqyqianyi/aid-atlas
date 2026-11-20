@@ -92,6 +92,7 @@
 
   /* ---------- controls ---------- */
   .controls{display:flex;flex-wrap:wrap;gap:.7rem 1.4rem;align-items:center;margin:1.1rem 0 1rem}
+  .controls .grp:last-of-type{margin-left:auto}
   .grp{display:flex;align-items:center;gap:.5rem}
   .grp .cap{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
   .seg{display:flex;border:1px solid var(--rule);background:#fff}
@@ -141,7 +142,7 @@
   .pbar{height:6px;background:#e8eaec;position:relative}
   .pbar span{position:absolute;left:0;top:0;bottom:0;background:var(--blue)}
   .two{display:grid;grid-template-columns:1.05fr .95fr;gap:2.6rem;align-items:start}
-  .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--rule);
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);
          border:1px solid var(--rule);margin:1.1rem 0 1.9rem}
   .steps>div{background:#fff;padding:.8rem .75rem .9rem}
   .steps .n{font-size:.6rem;letter-spacing:.12em;color:var(--amber);font-weight:700}
@@ -167,7 +168,7 @@
 
   /* ---------- method ---------- */
   .method{display:grid;grid-template-columns:1fr 1fr;gap:2.6rem}
-  .note{font-size:.78rem;color:var(--muted);max-width:76ch}
+  .note{font-size:.78rem;color:var(--muted);max-width:76ch;text-align:center;margin:.55rem auto 0}
   #qcount{white-space:nowrap;color:#a85c10;font-weight:600}
   .brief li{margin:.5rem 0;max-width:72ch}
 
@@ -384,19 +385,18 @@
   <h3>How it works</h3>
   <div class="steps">
     <div><span class="n">01</span><b>Ingest</b>
-      <p>Checksummed snapshots to <code>data/raw</code>, plus a manifest. Nothing downstream
-      touches the network again.</p></div>
+      <p>Checksummed snapshots to <code>data/raw</code> and a manifest, so every downstream
+      number can be reproduced without touching the network again.</p></div>
     <div><span class="n">02</span><b>Staging</b>
-      <p>The register flattened: one row per operation, one per country link, commitments split
-      evenly across recipients.</p></div>
+      <p>The register flattened: one row per operation, one row per country link, commitments
+      split evenly across recipients. Generated on every build, never versioned.</p></div>
     <div><span class="n">03</span><b>Marts</b>
-      <p>SQL files in filename order, <code>int_*</code> then <code>mart_*</code>. Eleven models,
-      seven published tables.</p></div>
-    <div><span class="n">04</span><b>Check</b>
-      <p>Thirteen assertions over warehouse and marts. Any failure exits non-zero and stops the
-      render.</p></div>
-    <div><span class="n">05</span><b>Publish</b>
-      <p>One HTML file. The marts and geometry are embedded; only D3 comes from a CDN.</p></div>
+      <p>Plain SQL files in filename order, <code>int_*</code> then <code>mart_*</code>. Eleven
+      models produce seven published tables; no mart reads a CSV directly.</p></div>
+    <div><span class="n">04</span><b>Check, then publish</b>
+      <p>Thirteen assertions over the warehouse and the marts; a failure exits non-zero and
+      stops the render. The site then embeds the marts and geometry into one HTML file, with
+      only D3 from a CDN.</p></div>
   </div>
   <div class="method">
     <div>
@@ -569,7 +569,7 @@ function renderLegend(){
       '<div class="ramp-labels"><span>better financed than need</span>' +
       '<span>need outruns financing</span></div></div>' +
       '<div class="chips" style="align-items:flex-end">' +
-      '<div class="note" style="max-width:32ch;margin:0">Rank-based, so every country is compared ' +
+      '<div class="note" style="max-width:32ch;margin:0;text-align:left">Rank-based, so every country is compared ' +
       'on position rather than on the size of its portfolio. Grey = no measured need.</div></div>';
     return;
   }
@@ -594,7 +594,7 @@ function renderLegend(){
   el.innerHTML = '<div>' + cap('Need &uarr; &nbsp; portfolio &rarr;') +
     '<table style="border-collapse:collapse"><tbody>' + rowsHtml + '</tbody></table>' +
     '<div class="ramp-labels" style="width:78px"><span>thin</span><span>large</span></div></div>' +
-    '<div class="note" style="max-width:34ch;margin:0">Amber cells are the high-need, ' +
+    '<div class="note" style="max-width:34ch;margin:0;text-align:left">Amber cells are the high-need, ' +
     'thin-portfolio corner; dark slate is high need with a large book, the case a quadrant view ' +
     'hides.</div>';
 }

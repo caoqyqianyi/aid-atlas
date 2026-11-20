@@ -194,7 +194,7 @@ snapshot, not a recommendation.
    build before a page is written. **Site** then embeds the marts and the country geometry into
    one HTML file. Only D3 is fetched from a CDN; there is no runtime API call.
 
-The same five stages are printed on the page, in section 06, so a reader of the dashboard does
+The same four stages are printed on the page, in section 06, so a reader of the dashboard does
 not have to leave it to find out where the numbers came from.
 
 The pipeline is standard library only. No pandas, no ORM, no third-party runtime dependency —
