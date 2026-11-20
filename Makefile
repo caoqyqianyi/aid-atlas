@@ -13,7 +13,7 @@ build:
 site:
 	$(PY) pipeline/site.py
 
-test:
+test: build
 	$(PY) -m unittest discover -s tests
 
 clean:
