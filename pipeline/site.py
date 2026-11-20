@@ -305,7 +305,7 @@ TEMPLATE = r"""<!doctype html>
   h1{font-size:2.55rem;line-height:1.18;margin:0 0 .85rem;max-width:22ch}
   h2{font-size:1.5rem;margin:0 0 .5rem;line-height:1.28}
   h3{font-size:.95rem;margin:1.7rem 0 .3rem;color:var(--navy)}
-  p{margin:.6rem 0;max-width:74ch}
+  p{margin:.6rem 0;max-width:100%}
 
   /* ---------- header ---------- */
   .topbar{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--rule)}
@@ -424,6 +424,12 @@ TEMPLATE = r"""<!doctype html>
   .pbar{height:6px;background:#e8eaec;position:relative}
   .pbar span{position:absolute;left:0;top:0;bottom:0;background:var(--blue)}
   .two{display:grid;grid-template-columns:1.05fr .95fr;gap:2.6rem;align-items:start}
+  .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--rule);
+         border:1px solid var(--rule);margin:1.1rem 0 1.9rem}
+  .steps>div{background:#fff;padding:.8rem .75rem .9rem}
+  .steps .n{font-size:.6rem;letter-spacing:.12em;color:var(--amber);font-weight:700}
+  .steps b{display:block;font-size:.8rem;color:var(--navy);margin:.2rem 0 .22rem}
+  .steps p{font-size:.73rem;color:var(--muted);margin:0;line-height:1.5}
   .three{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;align-items:start}
 
   /* ---------- operating profile and scenario ---------- */
@@ -460,7 +466,7 @@ TEMPLATE = r"""<!doctype html>
   @media (max-width:900px){
     .stats .in{grid-template-columns:repeat(2,1fr)}
     .tile:nth-child(2){border-right:0}
-    .two,.three,.method,.scenario,footer .in{grid-template-columns:1fr}
+    .two,.three,.method,.scenario,.steps,footer .in{grid-template-columns:1fr}
     nav{display:none} h1{font-size:1.85rem}
   }
 </style>
@@ -658,6 +664,23 @@ TEMPLATE = r"""<!doctype html>
 <section class="sec" id="method">
   <div class="sec-head"><div class="sec-no">06</div>
     <div><h2>Method, and what this cannot tell you</h2></div></div>
+  <h3>How it works</h3>
+  <div class="steps">
+    <div><span class="n">01</span><b>Ingest</b>
+      <p>Checksummed snapshots to <code>data/raw</code>, plus a manifest. Nothing downstream
+      touches the network again.</p></div>
+    <div><span class="n">02</span><b>Staging</b>
+      <p>The register flattened: one row per operation, one per country link, commitments split
+      evenly across recipients.</p></div>
+    <div><span class="n">03</span><b>Marts</b>
+      <p>SQL files in filename order, <code>int_*</code> then <code>mart_*</code>. Eleven models,
+      seven published tables.</p></div>
+    <div><span class="n">04</span><b>Check</b>
+      <p>Thirteen assertions over warehouse and marts. Any failure exits non-zero and stops the
+      render.</p></div>
+    <div><span class="n">05</span><b>Publish</b>
+      <p>One HTML file. The marts and geometry are embedded; only D3 comes from a CDN.</p></div>
+  </div>
   <div class="method">
     <div>
       <h3>How the two layers are built</h3>
@@ -985,10 +1008,40 @@ document.querySelectorAll('#filters button').forEach(btn => {
 
   const labelled = pts.filter(d => d.quadrant === 'high need / thin portfolio')
     .sort((a, b) => b.need - a.need).slice(0, 9);
+  const centres = pts.map(d => [x(Math.max(d.pc, floor)), y(d.need)]);
+  const boxes = [];
   g.selectAll('text.lbl').data(labelled).join('text')
     .attr('class', 'lbl')
-    .attr('x', d => x(Math.max(d.pc, floor)) + 8).attr('y', d => y(d.need) - 6)
-    .attr('font-size', 9.5).attr('fill', '#002244').text(d => d.iso3);
+    .attr('font-size', 9.5).attr('fill', '#002244')
+    .text(d => d.iso3)
+    .each(function(d){
+      const px = x(Math.max(d.pc, floor)), py = y(d.need);
+      const w = d.iso3.length * 6.9 + 2, h = 10;
+      const others = centres.filter(([cx, cy]) => Math.abs(cx - px) > 1 || Math.abs(cy - py) > 1);
+      const fits = (bx, by) => {
+        const top = by - h;
+        if (bx < 3 || bx + w > W - 3 || top < 0 || by > H) return false;
+        for (const b of boxes){
+          if (bx < b[0] + b[2] && b[0] < bx + w && top < b[1] + b[3] && b[1] < top + h) return false;
+        }
+        return !others.some(([cx, cy]) =>
+          cx > bx - 3 && cx < bx + w + 3 && cy > top - 3 && cy < top + h + 3);
+      };
+      let placed = false;
+      for (const dy of [0, -12, 12, -24, 24, -36, 36, -48, 48]){
+        for (const dx of [7, -w - 7]){
+          const bx = px + dx, by = py + dy;
+          if (fits(bx, by)){
+            d3.select(this).attr('x', bx).attr('y', by);
+            boxes.push([bx, by - h, w, h]);
+            placed = true;
+            break;
+          }
+        }
+        if (placed) break;
+      }
+      if (!placed) d3.select(this).attr('x', px + 7).attr('y', Math.min(H - 2, py - 6));
+    });
 })();
 
 const tb = document.querySelector('#blindtable tbody');
