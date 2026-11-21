@@ -259,8 +259,9 @@ class TestRenderedPage(unittest.TestCase):
         self.assertIn('<a class="brand" href="#top"', self.html)
         self.assertIn('<div class="topbar" id="top">', self.html)
         self.assertIn('class="datalink"', self.html)
-        head = self.html.split('class="datalink"', 1)[1][:300]
-        self.assertIn('href="https://github.com/caoqyqianyi/aid-atlas/tree/main/data/marts"', head)
+        head = self.html.split('class="datalink"', 1)[1][:200]
+        self.assertIn('href="#data"', head)
+        self.assertIn('id="data"', self.html)
 
 
 if __name__ == "__main__":

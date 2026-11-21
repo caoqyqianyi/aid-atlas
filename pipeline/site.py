@@ -373,7 +373,7 @@ TEMPLATE = r"""<!doctype html>
 
   /* ---------- sections ---------- */
   section.sec{padding:3.4rem 0 .4rem}
-  section{scroll-margin-top:76px}
+  section,#data{scroll-margin-top:76px}
   .sec-head{display:flex;align-items:flex-start;gap:.9rem;margin-bottom:1.2rem;border-bottom:1px solid var(--rule);
             padding-bottom:.75rem}
   .sec-no{font-size:.68rem;letter-spacing:.14em;color:var(--amber);font-weight:700;padding-top:.55rem}
@@ -485,8 +485,7 @@ TEMPLATE = r"""<!doctype html>
   <div class="bar">
     <a class="brand" href="#top" title="Aid Atlas, top of page"><span class="mark"></span>
       <span class="t">Aid Atlas</span></a>
-    <a class="datalink" href="https://github.com/caoqyqianyi/aid-atlas/tree/main/data/marts"
-       target="_blank" rel="noopener" title="The published tables, as CSV">Data</a>
+    <a class="datalink" href="#data" title="Data quality: the checks this page runs">Data</a>
     <nav>
       <a href="#overview" class="on">Overview</a>
       <a href="#countries">Countries</a>
@@ -722,7 +721,7 @@ TEMPLATE = r"""<!doctype html>
     </div>
   </div>
 
-  <h3 style="margin-top:2.4rem">Data quality</h3>
+  <h3 id="data" style="margin-top:2.4rem">Data quality</h3>
   <p class="minor">Every check below runs in <code>pipeline/dq.py</code> between the build and the
   render, and the build stops if one of them fails. <span id="dq-summary"></span></p>
   <table class="data" id="dqtable">
