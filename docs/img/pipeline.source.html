@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Aid Atlas pipeline</title>
+<style>
+  :root{--navy:#002244;--amber:#f2a900;--ink:#1b2733;--muted:#5b6b78;--hair:#dfe4e8;}
+  *{box-sizing:border-box}
+  body{margin:0;width:1200px;height:340px;background:#fff;color:var(--ink);
+       font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .pad{padding:26px 32px 0}
+  .hd{display:flex;align-items:center;gap:9px}
+  .mark{position:relative;width:20px;height:16px;background:var(--navy)}
+  .mark:after{content:"";position:absolute;right:0;bottom:0;width:9px;height:8px;background:var(--amber)}
+  .word{font-size:12.5px;letter-spacing:.16em;font-weight:700;color:var(--navy)}
+  .sub{margin:5px 0 0 29px;font-size:8.5px;letter-spacing:.15em;color:#8c9aa6;text-transform:uppercase}
+  .rule{height:2px;background:var(--navy);margin:12px 0 16px}
+  .row{display:flex;align-items:stretch}
+  .card{flex:1;border:1px solid var(--hair);border-top:3px solid var(--amber);
+        padding:10px 12px 11px;min-height:196px}
+  .card .st{font-size:7.5px;letter-spacing:.18em;color:#b07c14;font-weight:700}
+  .card h3{margin:4px 0 8px;font-size:14px;color:var(--navy);letter-spacing:.01em}
+  .card ul{list-style:none;margin:0;padding:0}
+  .card li{font-size:8.6px;line-height:1.45;color:var(--muted);padding:4px 0;border-top:1px solid #eef1f3}
+  .card li:first-child{border-top:0}
+  .card li b{display:block;font-size:8.8px;color:var(--ink);font-weight:600}
+  .card li code{display:block;font-family:"SFMono-Regular",Menlo,Consolas,monospace;
+                font-size:8.2px;color:#294a63;margin-bottom:1px}
+  .arrow{width:26px;display:flex;align-items:center;justify-content:center}
+  .arrow span{width:0;height:0;border-left:9px solid #c9a35a;border-top:5px solid transparent;
+              border-bottom:5px solid transparent}
+  .foot{margin-top:18px;font-size:8.2px;line-height:1.6;color:#7d8b96}
+  .card li i{font-family:"SFMono-Regular",Menlo,Consolas,monospace;font-style:normal;
+             font-size:8.2px;color:#294a63}
+  
+</style>
+</head>
+<body>
+<div class="pad">
+  <div class="hd"><div class="mark"></div><div class="word">AID ATLAS</div></div>
+  <div class="sub">Reproducible pipeline &middot; public data only</div>
+  <hr class="rule">
+
+  <div class="row">
+    <div class="card">
+      <div class="st">STAGE 01</div><h3>Source</h3>
+      <ul>
+        <li><b>World Bank Projects</b>commitments, status, dates</li>
+        <li><b>World Bank Indicators</b>population, income group</li>
+        <li><b>UN SDG API</b>4 series, 2000&ndash;2024</li>
+        <li>18,917 operations</li>
+      </ul>
+    </div>
+    <div class="arrow"><span></span></div>
+
+    <div class="card">
+      <div class="st">STAGE 02</div><h3>Snapshot</h3>
+      <ul>
+        <li>Frozen once, never edited</li>
+        <li><code>data/raw/*.json.gz</code></li>
+        <li>5 gzipped payloads</li>
+        <li><b>manifest.json</b>retrieved_at, sha256, rows</li>
+        <li><code>pipeline/ingest.py</code>--force &middot; --sample</li>
+      </ul>
+    </div>
+    <div class="arrow"><span></span></div>
+
+    <div class="card">
+      <div class="st">STAGE 03</div><h3>Build</h3>
+      <ul>
+        <li>Parse, clean, load</li>
+        <li><code>data/staging/*.csv</code>generated, not versioned</li>
+        <li><code>data/warehouse.db</code>three schemas</li>
+        <li><b>pipeline/build.py</b>amount &middot; date &middot; sector rules</li>
+      </ul>
+    </div>
+    <div class="arrow"><span></span></div>
+
+    <div class="card">
+      <div class="st">STAGE 04</div><h3>Model</h3>
+      <ul>
+        <li>SQL over the warehouse</li>
+        <li><code>models/*.sql</code>11 models: <i>int_*</i> &rarr; <i>mart_*</i></li>
+        <li><code>data/marts/*.csv</code>7 published tables</li>
+        <li>34 unit tests</li>
+      </ul>
+    </div>
+    <div class="arrow"><span></span></div>
+
+    <div class="card">
+      <div class="st">STAGE 05</div><h3>Publish</h3>
+      <ul>
+        <li>One self-contained file</li>
+        <li><code>site/index.html</code>payload inlined, D3 from CDN</li>
+        <li><code>pipeline/site.py</code>renders map &middot; tables &middot; legend</li>
+        <li>13 assertions gate the render</li>
+        <li>GitHub Pages, rebuilt on every push</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot"><b>Python 3 standard library only</b> &middot; no third-party runtime dependencies &middot;
+    every number in the dashboard is reproducible from <code>data/raw/</code> with one command &middot;
+    snapshot dates carried through from <code>manifest.json</code></div>
+</div>
+</body>
+</html>

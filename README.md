@@ -10,7 +10,7 @@
 [![Licence](https://img.shields.io/badge/licence-MIT-6b6f66?style=flat-square)](LICENSE)
 
 A reproducible pipeline that places a sovereign development portfolio on the same axis as
-measured service need, and ranks the countries where the two diverge. It is built as a
+measured service need, and ranks the 171 countries where both exist and the two diverge. It is built as a
 management instrument — a defensible review population for portfolio performance work —
 rather than as a map, and the geospatial layer is a reading aid, not the answer.
 
@@ -184,21 +184,24 @@ snapshot, not a recommendation.
   <img src="docs/img/pipeline.png" alt="Five stages: source, snapshot, build, model, publish" width="1000">
 </p>
 
-1. **Ingest** writes checksummed snapshots to `data/raw/` and records a manifest, so every
-   downstream number can be reproduced without touching the network again.
-2. **Staging** flattens the project register: one row per operation, one row per
-   operation–country link, with commitments split evenly across recipients. These CSVs are
-   generated on every build and are not versioned.
-3. **Marts** are plain SQL files run in filename order. Intermediates are `int_*`, published
-   tables are `mart_*`. Nothing in a mart reads a CSV directly. Eleven models produce seven
-   published tables.
-4. **Check, then publish.** `pipeline/dq.py` runs 13 assertions over the warehouse and the
-   marts and writes `mart_dq.csv`; the renderer reads that file, and a failing check stops the
-   build before a page is written. **Site** then embeds the marts and the country geometry into
-   one HTML file. Only D3 is fetched from a CDN; there is no runtime API call.
+1. **Source** is public data only: the sovereign project register, four SDG indicators, and
+   the population and income fields that make them readable per person. No figure depends on a
+   private feed.
+2. **Snapshot.** Each download is checksummed into `data/raw/` and recorded in a manifest, so
+   every downstream number can be reproduced without touching the network again.
+3. **Build** flattens the project register: one row per operation, one row per
+   operation–country link, with commitments split evenly across recipients. These staging CSVs
+   are generated on every build and are not versioned.
+4. **Model.** Plain SQL files run in filename order. Intermediates are `int_*`, published tables
+   are `mart_*`; nothing in a mart reads a CSV directly. Eleven models produce seven published
+   tables.
+5. **Publish.** `pipeline/dq.py` runs 13 assertions over the warehouse and the marts and writes
+   `mart_dq.csv`; the renderer reads that file, and a failing check stops the build before a
+   page is written. The site then embeds the marts and the country geometry into one HTML file.
+   Only D3 is fetched from a CDN; there is no runtime API call.
 
-The same four stages are printed on the page, in section 06, so a reader of the dashboard does
-not have to leave it to find out where the numbers came from.
+The same five stages, with the same names, are printed on the page in section 06, so a reader of
+the dashboard does not have to leave it to find out where the numbers came from.
 
 The pipeline is standard library only. No pandas, no ORM, no third-party runtime dependency —
 a reviewer can read every line that produces a number.
@@ -230,7 +233,7 @@ docs/
   data_quality.md     the 13 checks, their thresholds, and what a failure means
   reallocation-case.md  the five per cent scenario as a one-page business case
   decisions/          ADRs for the choices that had alternatives
-  img/                screenshots and the pipeline diagram used above
+  img/                screenshots of the page, and the pipeline diagram with its HTML source
 sops/
   refresh-data.md     quarterly refresh, step by step
   add-an-indicator.md extending the need index
