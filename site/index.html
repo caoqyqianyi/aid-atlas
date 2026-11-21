@@ -32,6 +32,10 @@
   .brand .t{font-size:.83rem;font-weight:700;letter-spacing:.1em;color:var(--navy);text-transform:uppercase}
   .brand .s{font-size:.75rem;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;
            border-left:1px solid var(--rule);padding-left:.7rem}
+  .datalink{margin-left:-1.05rem;font-size:.75rem;letter-spacing:.16em;color:var(--muted);
+            text-transform:uppercase;text-decoration:none!important;border-left:1px solid var(--rule);
+            padding:2px 0 2px .7rem}
+  .datalink:hover{color:var(--navy)}
   nav{display:flex;gap:1.35rem;margin-left:auto}
   nav a{font-size:.73rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
         padding:22px 0;border-bottom:3px solid transparent}
@@ -194,10 +198,12 @@
 </head>
 <body>
 
-<div class="topbar">
+<div class="topbar" id="top">
   <div class="bar">
-    <a class="brand" href="#overview"><span class="mark"></span>
-      <span class="t">Aid Atlas</span><span class="s">Data</span></a>
+    <a class="brand" href="#top" title="Aid Atlas, top of page"><span class="mark"></span>
+      <span class="t">Aid Atlas</span></a>
+    <a class="datalink" href="https://github.com/caoqyqianyi/aid-atlas/tree/main/data/marts"
+       target="_blank" rel="noopener" title="The published tables, as CSV">Data</a>
     <nav>
       <a href="#overview" class="on">Overview</a>
       <a href="#countries">Countries</a>

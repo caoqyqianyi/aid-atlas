@@ -254,6 +254,14 @@ class TestRenderedPage(unittest.TestCase):
     def test_payload_is_embedded_once(self):
         self.assertEqual(self.html.count("const DATA = "), 1)
 
+    def test_identity_and_data_links_go_to_different_places(self):
+        # "Aid Atlas" returns to the top of the page; "Data" leaves for the CSV marts.
+        self.assertIn('<a class="brand" href="#top"', self.html)
+        self.assertIn('<div class="topbar" id="top">', self.html)
+        self.assertIn('class="datalink"', self.html)
+        head = self.html.split('class="datalink"', 1)[1][:300]
+        self.assertIn('href="https://github.com/caoqyqianyi/aid-atlas/tree/main/data/marts"', head)
+
 
 if __name__ == "__main__":
     unittest.main()

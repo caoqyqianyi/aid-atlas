@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/python-3.11%2B-2f5d7c?style=flat-square)](https://www.python.org/)
 [![SQL](https://img.shields.io/badge/marts-SQLite-2f5d7c?style=flat-square)](https://sqlite.org/)
 [![Dependencies](https://img.shields.io/badge/runtime%20deps-none-e9e3d1?style=flat-square)](#running-it)
-[![Tests](https://img.shields.io/badge/tests-34%20passing-6b8f71?style=flat-square)](#running-it)
+[![Tests](https://img.shields.io/badge/tests-35%20passing-6b8f71?style=flat-square)](#running-it)
 [![CI](https://github.com/caoqyqianyi/aid-atlas/actions/workflows/ci.yml/badge.svg)](https://github.com/caoqyqianyi/aid-atlas/actions/workflows/ci.yml)
 [![Licence](https://img.shields.io/badge/licence-MIT-6b6f66?style=flat-square)](LICENSE)
 
@@ -238,7 +238,7 @@ sops/
   refresh-data.md     quarterly refresh, step by step
   add-an-indicator.md extending the need index
   review-a-portfolio.md  how the output is used in a review
-tests/test_pipeline.py   34 tests: reconciliation, bounds, ranking, operating profile,
+tests/test_pipeline.py   35 tests: reconciliation, bounds, ranking, operating profile,
                          scenario arithmetic, the quality gate and page structure
 data/
   raw/                committed snapshots and their manifest
