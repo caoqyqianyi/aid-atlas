@@ -353,6 +353,7 @@ TEMPLATE = r"""<!doctype html>
           text-transform:uppercase;color:#c6d2de;margin-bottom:1.1rem}
   .kicker b{display:block;width:34px;height:3px;background:var(--amber)}
   .hero h1{color:#fff;max-width:min(34ch,100%);font-size:2.6rem;text-wrap:balance}
+  .hero h1 .hl{color:var(--amber)}
   .hero .goal{color:#fff;font-size:1.2rem;line-height:1.5;max-width:min(80ch,100%);
               margin:0 0 1rem;padding-left:.85rem;border-left:3px solid var(--amber)}
   .hero .lede{color:#c9d6e2;font-size:1.03rem;max-width:min(82ch,100%);margin:0;
@@ -503,7 +504,8 @@ TEMPLATE = r"""<!doctype html>
 <section class="hero" id="overview">
   <div class="in">
     <div class="kicker"><b></b>Independent analysis &middot; public data only</div>
-    <h1>Where development finance is delivered, and where it is needed</h1>
+    <h1>Where development finance is <span class="hl">delivered</span>, and where it is
+    <span class="hl">needed</span></h1>
     <p class="goal">It ranks 171 countries by the gap between financing per person and
     measured SDG need.</p>
     <p class="lede">A reproducible pipeline that reads a sovereign development portfolio against four
