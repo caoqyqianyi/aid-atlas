@@ -1,8 +1,8 @@
 # site/index.html is rendered from the marts by pipeline/site.py on every build:
 # it is an artefact, not source. Marking it generated keeps the language
 # breakdown about the pipeline rather than the page it emits.
-site/index.html linguist-generated=true -linguist-detectable
+site/index.html linguist-generated=true linguist-vendored=true -linguist-detectable
 
 # The figures page that draws the pipeline diagram is a source document, but it
 # is three hundred lines of layout for a picture; it stays out of the count too.
-docs/img/pipeline.source.html linguist-generated=true -linguist-detectable
+docs/img/pipeline.source.html linguist-generated=true linguist-vendored=true -linguist-detectable
