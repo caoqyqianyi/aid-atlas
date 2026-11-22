@@ -14,7 +14,8 @@ measured service need, and ranks the 171 countries where both exist and the two 
 management instrument — a defensible review population for portfolio performance work —
 rather than as a map, and the geospatial layer is a reading aid, not the answer.
 
-**Live dashboard:** [caoqyqianyi.github.io/aid-atlas](https://caoqyqianyi.github.io/aid-atlas/)
+**▶ Live dashboard — [caoqyqianyi.github.io/aid-atlas](https://caoqyqianyi.github.io/aid-atlas/)**  
+[![Live dashboard](https://img.shields.io/badge/open%20the%20live-aid%20atlas%20dashboard-8e24aa?style=for-the-badge)](https://caoqyqianyi.github.io/aid-atlas/)  
 
 <p align="center">
   <img src="docs/img/dashboard.png" alt="The dashboard: headline figures and the allocation-gap map" width="900">
