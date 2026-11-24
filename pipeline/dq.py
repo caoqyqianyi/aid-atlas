@@ -68,6 +68,13 @@ def check(conn: sqlite3.Connection) -> list[dict]:
     classified = conn.execute(
         "SELECT SUM(total_amt) FROM stg_ops WHERE sector_group <> 'Unclassified'"
     ).fetchone()[0] or 0
+    # The SDG extract ships "nan" as a string for years it has not filled yet.
+    # Stored as text, a NaN passes every numeric bound and then reads as the
+    # largest gap in the country's index - so it gets its own check.
+    sdg_bad = conn.execute(
+        "SELECT COUNT(*) FROM stg_sdg WHERE typeof(value) <> 'real'"
+        " OR value < 0 OR value > 100"
+    ).fetchone()[0]
 
     country_total = sum(num(r["total_commitment"]) for r in countries)
     country_active = sum(num(r["active_commitment"]) for r in countries)
@@ -142,6 +149,9 @@ def check(conn: sqlite3.Connection) -> list[dict]:
         abs(sum(num(r["value"]) for r in perf if r["dimension"] == "status")
             - health.get("total_value_usd", 0)) < 0.01,
         "status buckets are exhaustive by construction")
+    add("dq_14", "Bounds", "SDG observations are finite percentages",
+        sdg_bad, "= 0", sdg_bad == 0,
+        "no NaN placeholders and no reading outside 0-100")
     return rows
 
 

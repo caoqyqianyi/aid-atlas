@@ -12,6 +12,7 @@ from __future__ import annotations
 import csv
 import gzip
 import json
+import math
 from datetime import date
 from pathlib import Path
 
@@ -137,6 +138,146 @@ def snapshot_date() -> str:
               if s.get("retrieved_at")]
     return max(stamps)[:10] if stamps else date.today().isoformat()
 
+def pearson(xs: list[float], ys: list[float]) -> float:
+    """Correlation without pulling in numpy; the payload needs one number."""
+    n = len(xs)
+    if n < 2:
+        return 0.0
+    mx, my = sum(xs) / n, sum(ys) / n
+    sxy = sum((x - mx) * (y - my) for x, y in zip(xs, ys))
+    sxx = sum((x - mx) ** 2 for x in xs) ** 0.5
+    syy = sum((y - my) ** 2 for y in ys) ** 0.5
+    return sxy / (sxx * syy) if sxx and syy else 0.0
+
+
+def build_robustness(rows: list[dict]) -> dict:
+    """Fold the long robustness mart into the matrix the page draws.
+
+    Columns are the six readings; rows are the union of every country that
+    reaches the top 25 under at least one of them, so a country that only
+    enters under a single definition is still on the page to be seen entering.
+    """
+    variants = [
+        ("equal", "Equal weights"),
+        ("no_poverty", "No poverty"),
+        ("no_hunger", "No hunger"),
+        ("no_water", "No water"),
+        ("no_energy", "No energy"),
+        ("worst", "Worst dimension"),
+    ]
+    by_country: dict[str, dict] = {}
+    for row in rows:
+        iso = row["iso3"]
+        entry = by_country.setdefault(iso, {"iso3": iso, "name": row["name"], "ranks": {}})
+        entry["ranks"][row["variant"]] = int(num(row["rank"], 0))
+        if row["variant"] == "equal":
+            entry["need"] = num(row["need_index"])
+            # The published rank, not this variant's rank: ties in the gap
+            # would otherwise number two countries 9th and contradict the
+            # table two sections above.
+            entry["shortlist"] = int(num(row["shortlist_rank"], 0)) or None
+
+    baseline = [c for c in by_country.values() if c.get("shortlist")]
+    baseline.sort(key=lambda c: c["shortlist"])
+    keep = {c["iso3"] for c in baseline}
+
+    shown = [c for c in by_country.values() if min(c["ranks"].values()) <= 25]
+    shown.sort(key=lambda c: (c.get("shortlist") is None, c.get("shortlist") or 999,
+                              min(c["ranks"].values())))
+
+    columns = []
+    for key, label in variants:
+        kept = sum(1 for c in baseline if c["ranks"].get(key, 999) <= 25)
+        columns.append({"key": key, "label": label, "kept": kept})
+
+    matrix = []
+    for c in shown:
+        held = sum(1 for col in columns if c["ranks"].get(col["key"], 999) <= 25)
+        matrix.append(
+            {
+                "iso3": c["iso3"],
+                "name": c["name"],
+                "baseline": c.get("shortlist"),
+                "need": c.get("need"),
+                "held": held,
+                "ranks": [c["ranks"].get(col["key"]) for col in columns],
+            }
+        )
+
+    stable = sum(1 for c in matrix if c["held"] == len(columns))
+    return {
+        "columns": columns,
+        "rows": matrix,
+        "stable": stable,
+        "baseline": len(baseline),
+        "n_countries": len(by_country),
+        "drifting": [c["iso3"] for c in matrix if c["held"] <= 2],
+        "keep": sorted(keep),
+    }
+
+
+def build_convergence(rows: list[dict]) -> dict:
+    """Starting need against the change since 2015.
+
+    Absolute points, not percentages, because that is the scale the gap is
+    measured on. A negative slope means the countries with the most need
+    improved fastest - convergence - and the slope is what turns that into a
+    rate rather than an impression.
+    """
+    points = []
+    for r in rows:
+        points.append(
+            {
+                "iso3": r["iso3"],
+                "name": r["name"],
+                "region": r["region"],
+                "n15": num(r["need_2015"]),
+                "n24": num(r["need_latest"]),
+                "year": int(num(r["latest_year"], 0)),
+                "delta": num(r["delta_pp"]),
+                "pc": num(r["post2015_pc"], 0.0),
+                "pop": round(num(r["population"], 0)),
+                "rank": int(num(r["priority_rank"], 0)) or None,
+            }
+        )
+    points.sort(key=lambda p: p["delta"] if p["delta"] is not None else 0)
+    deltas = [p["delta"] for p in points if p["delta"] is not None]
+    starts = [p["n15"] for p in points if p["n15"] is not None]
+    money = [p for p in points if (p["pc"] or 0) > 0]
+
+    mx, my = sum(starts) / len(starts), sum(deltas) / len(deltas)
+    slope = (sum((x - mx) * (y - my) for x, y in zip(starts, deltas))
+             / sum((x - mx) ** 2 for x in starts)) if starts else 0.0
+    window = sorted(p["year"] - 2015 for p in points)[len(points) // 2]
+
+    def bucket(lo: float, hi: float) -> float:
+        vals = [p["delta"] for p in points if lo <= p["n15"] < hi]
+        return round(sorted(vals)[len(vals) // 2], 1) if vals else 0.0
+
+    # Half-life of the average gap if the fitted rate repeats: a statement about
+    # the observed window, not a forecast.
+    half_life = 0
+    if slope < 0:
+        half_life = int(round(math.log(0.5) / math.log(1 + slope) * window))
+
+    return {
+        "rows": points,
+        "n": len(points),
+        "window": window,
+        "median": round(sorted(deltas)[len(deltas) // 2], 2) if deltas else 0.0,
+        "improved": sum(1 for d in deltas if d <= -2),
+        "worsened": sum(1 for d in deltas if d >= 2),
+        "n_money": len(money),
+        "r": round(pearson([p["delta"] for p in money],
+                           [math.log1p(p["pc"]) for p in money]), 3),
+        "slope": round(slope, 3),
+        "intercept": round(my - slope * mx, 2),
+        "high": bucket(40, 200),
+        "low": bucket(0, 10),
+        "half_life": half_life,
+    }
+
+
 def build_payload() -> dict:
     countries = load_csv("mart_country")
     health = {row["metric"]: num(row["value"]) for row in load_csv("mart_portfolio_health")}
@@ -146,6 +287,8 @@ def build_payload() -> dict:
     performance = load_csv("mart_portfolio_performance")
     scenario = load_csv("mart_reallocation")[0]
     dq = load_csv("mart_dq")
+    robustness = load_csv("mart_robustness")
+    convergence = load_csv("mart_convergence")
 
     rows = []
     for row in countries:
@@ -257,6 +400,8 @@ def build_payload() -> dict:
             "total": len(dq),
         },
         "positive_gap": sum(1 for r in rows if (r["gap"] or 0) > 0),
+        "robustness": build_robustness(robustness),
+        "convergence": build_convergence(convergence),
         "palette": bivariate_colours(),
         "geometry": simplify_geometry(RAW / "ne_110m_admin_0_countries.json.gz"),
     }
@@ -457,6 +602,40 @@ TEMPLATE = r"""<!doctype html>
         padding:.1rem .38rem;border:1px solid #cfe0d5;background:#eef4f0;color:#2f5d3f}
   .pill.bad{border-color:#e6cfc7;background:#faf0ed;color:#8a3b22}
 
+  /* ---------- robustness matrix ---------- */
+  .matrixwrap{margin:1.15rem 0 0;padding:0;overflow-x:auto}
+  .matrix{font-size:.74rem;border-top:3px solid var(--navy);min-width:680px}
+  .matrix thead th{padding:.5rem .35rem .45rem;vertical-align:bottom}
+  .matrix thead th .sub{display:block;font-weight:400;font-size:.59rem;color:var(--muted);
+        letter-spacing:.03em;text-transform:none;margin-top:.12rem}
+  .matrix th.n,.matrix td.n{text-align:right}
+  .matrix td{padding:.3rem .35rem;border-bottom:1px solid var(--hair);text-align:center;
+        font-variant-numeric:tabular-nums}
+  .matrix td:first-child{text-align:left;padding-left:.8rem;font-size:.78rem;white-space:nowrap}
+  .matrix td.n{text-align:right;padding-right:.8rem;font-weight:600;color:var(--navy)}
+  .matrix td .out{color:#b9bec2;font-weight:400}
+  .matrix tr.offs td:first-child{color:#6f7377}
+  .matrix tr.band td{background:#fbfbfc;border-top:1px solid var(--rule);
+        font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+        padding:.5rem .8rem;text-align:left}
+  .qcount{color:#a85c10;font-weight:600}
+
+  /* ---------- convergence ---------- */
+  .convwrap{border:1px solid var(--rule);margin-top:.7rem;display:grid;
+        grid-template-columns:1.22fr .78fr;gap:1.5rem;padding:1rem 1.2rem 1.2rem;align-items:start}
+  .convplot svg{display:block;width:100%;height:auto}
+  .convwrap .ax{font-size:9.5px;fill:var(--muted);letter-spacing:.03em}
+  .convwrap .axl{font-size:10.5px;fill:var(--navy);letter-spacing:.04em}
+  .convwrap .lbl{font-size:10px;fill:var(--navy);font-weight:600}
+  .convmovers h4{font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+        margin:.1rem 0 .5rem;font-weight:600}
+  .convmovers table.data{font-size:.76rem;margin-top:0}
+  .convmovers th,.convmovers td{padding:.34rem .45rem}
+  .convmovers .sep td{border-top:1px solid var(--rule);padding-top:.5rem}
+  .convmovers .note{text-align:left;margin:.55rem 0 0;font-size:.7rem;max-width:100%}
+  .capnote{font-size:.74rem;color:var(--ink);line-height:1.6;margin:.9rem 0 0;
+        max-width:100%;border-top:1px solid var(--hair);padding-top:.7rem}
+
   /* ---------- method ---------- */
   .method{display:grid;grid-template-columns:1fr 1fr;gap:2.6rem}
   .note{font-size:.78rem;color:var(--muted);max-width:76ch;text-align:center;margin:.55rem auto 0}
@@ -475,7 +654,7 @@ TEMPLATE = r"""<!doctype html>
   @media (max-width:900px){
     .stats .in{grid-template-columns:repeat(2,1fr)}
     .tile:nth-child(2){border-right:0}
-    .two,.three,.method,.scenario,.steps,footer .in{grid-template-columns:1fr}
+    .two,.three,.method,.scenario,.steps,.convwrap,footer .in{grid-template-columns:1fr}
     nav{display:none} h1{font-size:1.85rem}
   }
 </style>
@@ -506,7 +685,7 @@ TEMPLATE = r"""<!doctype html>
     <div class="kicker"><b></b>Independent analysis &middot; public data only</div>
     <h1>Where development finance is <span class="hl">delivered</span>, and where it is
     <span class="hl">needed</span></h1>
-    <p class="goal">It ranks 171 countries by the gap between financing per person and
+    <p class="goal">It ranks 167 countries by the gap between financing per person and
     measured SDG need.</p>
     <p class="lede">A reproducible pipeline that reads a sovereign development portfolio against four
     official SDG indicators. It asks a management question rather than a mapping question:
@@ -594,8 +773,52 @@ TEMPLATE = r"""<!doctype html>
   </table>
 </section>
 
-<section class="sec" id="portfolio">
+<section class="sec" id="robustness">
   <div class="sec-head"><div class="sec-no">04</div>
+    <div><h2>Does the short list survive a different reading?</h2></div></div>
+  <p>The ranking averages four gaps with equal weight, which is one choice among several. This
+  runs the same comparison five other ways - drop each indicator in turn, and take the single worst
+  gap instead of the mean - over exactly the same countries. A move between columns is therefore a
+  move in definition, not in data. <span class="qcount" id="rob-summary"></span></p>
+  <div class="card matrixwrap">
+    <table class="data matrix" id="robusttable">
+      <thead><tr><th>Country</th><th class="n">Rank</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p class="note">Darker cells sit closer to the top of the list. A grey number is a country that
+  is still ranked under that reading, just outside the top 25 - it is entering or leaving, not
+  missing.</p>
+</section>
+
+<section class="sec" id="trend">
+  <div class="sec-head"><div class="sec-no">05</div>
+    <div><h2>Is the picture moving?</h2></div></div>
+  <p>Every figure above is the latest reading, as if need stood still. Read from 2015, when the
+  2030 framework was adopted, the four series show whether the countries carrying the most need
+  are catching up. The horizontal axis is the 2015 reading; the vertical axis is what changed
+  since, in the same points - downward is improvement. The dashed line is a least-squares fit
+  through all 117 countries with a reading in both years.</p>
+  <div class="legend" id="convlegend"></div>
+  <div class="card convwrap">
+    <div class="convplot"><svg id="conv" viewBox="0 0 560 560" role="img"
+      aria-label="Starting need against the change since 2015"></svg></div>
+    <div class="convmovers">
+      <h4>Largest moves, 2015 to latest</h4>
+      <table class="data" id="movertable">
+        <thead><tr><th>Country</th><th style="text-align:right">Change</th>
+        <th style="text-align:right">$ / person</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="note">Need is the change in points of population unserved; money is approved
+      from 2015 onward, per person.</div>
+      <p class="capnote" id="convcaption"></p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="portfolio">
+  <div class="sec-head"><div class="sec-no">06</div>
     <div><h2>The portfolio itself</h2></div></div>
   <div class="two">
     <div>
@@ -620,7 +843,7 @@ TEMPLATE = r"""<!doctype html>
 </section>
 
 <section class="sec" id="operating">
-  <div class="sec-head"><div class="sec-no">05</div>
+  <div class="sec-head"><div class="sec-no">07</div>
     <div><h2>How the book behaves</h2></div></div>
   <p class="minor">The same snapshot read as an operating profile rather than a map: what is still live,
   when the live work was approved, how long operations are planned to run, and how much of the value
@@ -675,7 +898,7 @@ TEMPLATE = r"""<!doctype html>
 </section>
 
 <section class="sec" id="method">
-  <div class="sec-head"><div class="sec-no">06</div>
+  <div class="sec-head"><div class="sec-no">08</div>
     <div><h2>Method, and what this cannot tell you</h2></div></div>
   <h3>How it works</h3>
   <div class="steps">
@@ -689,10 +912,10 @@ TEMPLATE = r"""<!doctype html>
       <p>The register flattened into staging CSVs: one row per operation, one per country
       link, commitments split evenly. Generated on every build, never versioned.</p></div>
     <div><span class="n">04</span><b>Model</b>
-      <p>Plain SQL files in filename order, <code>int_*</code> then <code>mart_*</code>. Eleven
-      models produce seven published tables; no mart reads a CSV directly.</p></div>
+      <p>Plain SQL files in filename order, <code>int_*</code> then <code>mart_*</code>. Fifteen
+      models produce nine published tables; no mart reads a CSV directly.</p></div>
     <div><span class="n">05</span><b>Publish</b>
-      <p>Thirteen assertions over warehouse and marts; a failure exits non-zero and stops the
+      <p>Fourteen assertions over warehouse and marts; a failure exits non-zero and stops the
       render. The site then embeds marts and geometry into one file, only D3 from a CDN.</p></div>
   </div>
   <div class="method">
@@ -1259,6 +1482,170 @@ const ht = document.querySelector('#healthtable tbody');
   });
   document.getElementById('dq-summary').textContent =
     d.passed + ' of ' + d.total + ' checks pass on the committed snapshot.';
+})();
+
+/* ---------- robustness matrix ---------- */
+(function robustness(){
+  const r = DATA.robustness;
+  const head = document.querySelector('#robusttable thead tr');
+  r.columns.forEach(col => {
+    const th = document.createElement('th');
+    th.innerHTML = col.label + '<span class="sub">' + col.kept + ' of 25 kept</span>';
+    head.appendChild(th);
+  });
+
+  // Two stops rather than one smooth ramp: almost all of the signal sits in
+  // ranks 1-12, and a linear ramp spends most of its range on ranks nobody
+  // reads twice.
+  const heat = d3.scaleLinear().domain([1, 11, 25]).range(['#c07c00', '#e7b354', '#fdf8ec']);
+  const dark = hex => {
+    const c = d3.rgb(hex);
+    return (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255 < 0.6;
+  };
+  const tb = document.querySelector('#robusttable tbody');
+  let banded = false;
+  r.rows.forEach(row => {
+    if (row.baseline === null && !banded) {
+      banded = true;
+      const band = document.createElement('tr');
+      band.className = 'band';
+      band.innerHTML = '<td colspan="8">Outside the short list - entering under another reading</td>';
+      tb.appendChild(band);
+    }
+    const tr = document.createElement('tr');
+    if (row.baseline === null) tr.className = 'offs';
+    let cells = '<td>' + row.name + '</td><td class="n">' +
+      (row.baseline === null ? '' : row.baseline) + '</td>';
+    row.ranks.forEach(rank => {
+      if (rank !== null && rank <= 25) {
+        const bg = heat(rank);
+        cells += '<td style="background:' + bg + ';color:' + (dark(bg) ? '#ffffff' : '#4a3505') +
+          '">' + rank + '</td>';
+      } else {
+        cells += '<td><span class="out">' + (rank === null ? '-' : rank) + '</span></td>';
+      }
+    });
+    tr.innerHTML = cells;
+    tb.appendChild(tr);
+  });
+
+  const phrase = {equal: 'the baseline', no_poverty: 'dropping poverty', no_hunger: 'dropping hunger',
+    no_water: 'dropping water', no_energy: 'dropping electricity', worst: 'using the worst dimension'};
+  const weakest = r.columns.slice(1).reduce((a, b) => (b.kept < a.kept ? b : a));
+  const heldOne = r.rows.filter(x => x.held === 1).length;
+  document.getElementById('rob-summary').textContent =
+    r.stable + ' of the ' + r.baseline + ' hold their place under all six readings' +
+    (heldOne ? '; ' + heldOne + ' countries from outside the list enter under exactly one' : '') +
+    '. The largest swing comes from ' + phrase[weakest.key] + ': ' +
+    (r.baseline - weakest.kept) + ' of the 25 leave the list.';
+})();
+
+/* ---------- convergence ---------- */
+(function convergence(){
+  const c = DATA.convergence;
+  const rows = c.rows;
+  const W = 560, H = 560, m = {t: 20, r: 22, b: 58, l: 58};
+  const svg = d3.select('#conv');
+  const x = d3.scaleLinear().domain([0, 76]).range([m.l, W - m.r]);
+  const y = d3.scaleLinear().domain([7, -19]).range([m.t, H - m.b]);
+
+  [0, 25, 50, 75].forEach(v => {
+    svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', y(7)).attr('y2', y(-19))
+       .attr('stroke', '#f4f5f6');
+    svg.append('text').attr('x', x(v)).attr('y', y(-19) + 15).attr('text-anchor', 'middle')
+       .attr('class', 'ax').text(v);
+  });
+  [5, 0, -5, -10, -15].forEach(v => {
+    svg.append('line').attr('x1', x(0)).attr('x2', x(76)).attr('y1', y(v)).attr('y2', y(v))
+       .attr('stroke', v === 0 ? '#dfe1e3' : '#f4f5f6');
+    svg.append('text').attr('x', m.l - 8).attr('y', y(v) + 3).attr('text-anchor', 'end')
+       .attr('class', 'ax').text(v > 0 ? '+' + v : v);
+  });
+
+  // The fitted line is the finding: its slope says whether need is converging
+  // and how fast, so it is drawn rather than only described.
+  svg.append('line').attr('x1', x(0)).attr('y1', y(c.intercept))
+     .attr('x2', x(76)).attr('y2', y(c.intercept + c.slope * 76))
+     .attr('stroke', '#dc9600').attr('stroke-width', 1.4).attr('stroke-dasharray', '7 4');
+
+  const money = rows.filter(p => (p.pc || 0) > 0).map(p => p.pc).sort((a, b) => a - b);
+  const cut = money.length ? money[Math.floor(money.length / 2)] : 0;
+  const fill = p => !(p.pc > 0) ? '#f2a900' : (p.pc >= cut ? '#002244' : '#7fa6c2');
+
+  svg.append('g').selectAll('circle').data(rows).join('circle')
+    .attr('cx', p => x(p.n15)).attr('cy', p => y(p.delta))
+    .attr('r', p => p.rank ? 5.2 : 4.1)
+    .attr('fill', fill).attr('fill-opacity', .88)
+    .attr('stroke', p => p.rank ? '#ffffff' : 'none')
+    .attr('stroke-width', p => p.rank ? 1.5 : 0)
+    .append('title')
+    .text(p => p.name + ' - ' + p.n15.toFixed(1) + ' in 2015, ' + p.n24.toFixed(1) + ' in ' +
+      p.year + ' (' + (p.delta > 0 ? '+' : '') + p.delta.toFixed(1) + ' points); $' +
+      p.pc.toFixed(0) + ' per person approved since 2015');
+
+  // Five names, chosen so the eye finds the shape: the deepest falls, the fall
+  // that came with almost no money, and the largest rises.
+  const picks = rows.filter(p => ['UGA', 'KHM', 'ZWE', 'TUN', 'UKR'].includes(p.iso3));
+  const boxes = [];
+  picks.forEach(p => {
+    const label = p.name.length > 18 ? p.name.slice(0, 17) + '\u2026' : p.name;
+    const w = label.length * 5.1, h = 10, px = x(p.n15), py = y(p.delta);
+    const spots = [[px + 8, py - 4, 'start'], [px - 8 - w, py - 4, 'start'],
+                   [px + 8, py + 12, 'start'], [px - 8 - w, py + 12, 'start']];
+    for (const [lx, ly, anchor] of spots) {
+      const box = {x0: lx, x1: lx + w, y0: ly - h + 3, y1: ly + 2, h};
+      const clash = boxes.some(b => lx < b.x1 + 3 && lx + w > b.x0 - 3 &&
+                                      ly < b.y1 + 3 && ly - h > b.y0 - 3);
+      if (lx < m.l + 2 || lx + w > W - m.r || clash) continue;
+      boxes.push(box);
+      svg.append('text').attr('x', lx).attr('y', ly).attr('text-anchor', anchor)
+         .attr('class', 'lbl').text(label);
+      break;
+    }
+  });
+
+  svg.append('text').attr('x', (x(0) + x(76)) / 2).attr('y', H - 12)
+     .attr('text-anchor', 'middle').attr('class', 'axl')
+     .text('Measured need, 2015  (points of population unserved)');
+  const midY = (y(7) + y(-19)) / 2;
+  svg.append('text').attr('x', 14).attr('y', midY).attr('text-anchor', 'middle')
+     .attr('class', 'axl').attr('transform', 'rotate(-90, 14, ' + midY + ')')
+     .text('Change since 2015 (points; down is better)');
+
+  document.getElementById('convlegend').innerHTML =
+    '<div><div class="cap">Approved since 2015, per person</div><div class="chips">' +
+    '<span class="chip"><i style="background:#002244"></i>above the median</span>' +
+    '<span class="chip"><i style="background:#7fa6c2"></i>below the median</span>' +
+    '<span class="chip"><i style="background:#f2a900"></i>nothing approved</span>' +
+    '</div></div>' +
+    '<div><div class="cap">Dashed line</div><div class="chips">' +
+    '<span class="chip"><i style="background:#dc9600;height:2px;margin:5px 0"></i>' +
+    'fit, \u2212' + Math.abs(c.slope).toFixed(2) + ' points per point of 2015 need</span>' +
+    '</div></div>' +
+    '<div><div class="cap">White ring</div><div class="chips">' +
+    '<span class="chip"><i style="background:#002244;border-radius:50%;' +
+    'box-shadow:0 0 0 1.5px #fff"></i>on the short list</span></div></div>';
+
+  document.getElementById('convcaption').textContent =
+    'Need is converging, slowly. Countries that started above 40 points fell a median of ' +
+    Math.abs(c.high).toFixed(1) + '; those that started under 10 fell ' +
+    Math.abs(c.low).toFixed(1) + '. A slope of \u2212' + Math.abs(c.slope).toFixed(2) +
+    ' points per point of 2015 need would halve the median gap in about ' +
+    c.half_life + ' years if the ' + c.window +
+    '-year average held - a rate, not a forecast. Money does not sort the cloud: across ' +
+    c.n_money + ' countries that received anything since 2015, the correlation between the ' +
+    'change in need and log dollars per person is ' + (c.r >= 0 ? '+' : '') + c.r.toFixed(2) +
+    '; ' + c.improved + ' of ' + c.n + ' countries improved by two points or more.';
+
+  const movers = document.getElementById('movertable').querySelector('tbody');
+  const top = rows.slice(0, 5), rising = rows.slice(-3);
+  const row = (p, cls) => '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td>' + p.name +
+    '</td><td style="text-align:right;color:' + (p.delta <= 0 ? '#2f5d3f' : '#8a3b22') + '">' +
+    (p.delta > 0 ? '+' : '') + p.delta.toFixed(1) + '</td><td style="text-align:right">' +
+    (p.pc > 0 ? '$' + fmt(p.pc) : 'none') + '</td></tr>';
+  movers.innerHTML = top.map(p => row(p)).join('') +
+    '<tr class="sep"><td colspan="3" style="color:#6f7377;font-size:.63rem;text-transform:uppercase;' +
+    'letter-spacing:.09em">Rising</td></tr>' + rising.map(p => row(p)).join('');
 })();
 
 renderLegend();

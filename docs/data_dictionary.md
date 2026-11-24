@@ -138,3 +138,38 @@ high-need / thin-financing quadrant).
 | `countries_with_need_data` | count | countries with `need_complete = 1` |
 | `sector_hhi` | index | sum of squared classified sector shares |
 | `share_value_top10_operations` | ratio | concentration in the ten largest operations |
+
+### `mart_robustness.csv` — the short list under six readings (1002)
+
+One row per variant × country, for the 167 countries with a need index.
+
+| Column | Type | Definition |
+|---|---|---|
+| `variant` | text | `equal`, `no_poverty`, `no_hunger`, `no_water`, `no_energy` or `worst` |
+| `iso3`, `name` | text | country identity |
+| `need` | real | need index under this variant: the mean of the remaining gaps, renormalised over the indicators actually present; `worst` takes the single largest gap |
+| `need_pct`, `financing_pct` | real | percentile ranks of need and of financing per person (missing financing counts as 0, so an unfunded country ranks at the bottom) |
+| `gap` | real | `need_pct − financing_pct`, the allocation gap as this reading sees it |
+| `rank` | int | position under this variant, unique per variant (ties broken by need, then ISO-3) |
+| `in_top25` | 0/1 | whether this country is in the top 25 under this variant |
+| `baseline_rank` | int | position under the published equal-weight ranking |
+| `rank_shift` | int | `baseline_rank − rank`: positive means this reading is kinder to the country |
+| `shortlist_rank` | int, null | the published rank (1–25) if the country is on the short list, else empty |
+
+### `mart_convergence.csv` — drift since 2015 (117)
+
+One row per country with at least three of the four indicators in both 2015 and a year from 2021.
+
+| Column | Type | Definition |
+|---|---|---|
+| `iso3`, `name` | text | country identity |
+| `need_2015`, `need_latest` | real | the index in the baseline year and in the country's latest qualifying year |
+| `latest_year` | int | the year behind `need_latest` (2021–2024; reporting dates differ by country) |
+| `delta_pp` | real | `need_latest − need_2015`, in percentage points |
+| `improved`, `worsened` | 0/1 | `delta_pp ≤ −2` and `delta_pp ≥ +2`, a band wide enough to absorb a one-indicator revision |
+| `post2015_ops`, `post2015_value` | int, USD | operations and commitment approved from 2015 onward |
+| `post2015_pc` | USD, null | `post2015_value / population`, null where nothing was committed |
+| `financing_pc` | USD, null | the stock figure from `mart_country`, for comparison |
+| `allocation_gap` | real | the published gap, so the drift layer can be read against the ranking |
+| `priority_rank` | int, null | 1–25 on the short list, else empty |
+

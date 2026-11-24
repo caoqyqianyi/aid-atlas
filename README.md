@@ -5,12 +5,12 @@
 [![Python](https://img.shields.io/badge/python-3.11%2B-2f5d7c?style=flat-square)](https://www.python.org/)
 [![SQL](https://img.shields.io/badge/marts-SQLite-2f5d7c?style=flat-square)](https://sqlite.org/)
 [![Dependencies](https://img.shields.io/badge/runtime%20deps-none-e9e3d1?style=flat-square)](#running-it)
-[![Tests](https://img.shields.io/badge/tests-35%20passing-6b8f71?style=flat-square)](#running-it)
+[![Tests](https://img.shields.io/badge/tests-48%20passing-6b8f71?style=flat-square)](#running-it)
 [![CI](https://github.com/caoqyqianyi/aid-atlas/actions/workflows/ci.yml/badge.svg)](https://github.com/caoqyqianyi/aid-atlas/actions/workflows/ci.yml)
 [![Licence](https://img.shields.io/badge/licence-MIT-6b6f66?style=flat-square)](LICENSE)
 
 A reproducible pipeline that places a sovereign development portfolio on the same axis as
-measured service need, and ranks the 171 countries where both exist and the two diverge. It is built as a
+measured service need, and ranks the 167 countries where both exist and the two diverge. It is built as a
 management instrument — a defensible review population for portfolio performance work —
 rather than as a map, and the geospatial layer is a reading aid, not the answer.
 
@@ -31,6 +31,8 @@ rather than as a map, and the geospatial layer is a reading aid, not the answer.
 - [What it answers](#what-it-answers)
 - [Reading the dashboard](#reading-the-dashboard)
 - [Key findings](#key-findings)
+- [Does the short list survive a different reading?](#does-the-short-list-survive-a-different-reading)
+- [Is the picture moving?](#is-the-picture-moving)
 - [The operating profile](#the-operating-profile)
 - [A scenario, priced](#a-scenario-priced)
 - [How it works](#how-it-works)
@@ -60,6 +62,8 @@ financing?* — and answers it with:
 | `mart_country` | the full analytic table, one row per country, both layers plus terciles |
 | `mart_portfolio_performance` | the same book as an operating profile: status, approval cohort, duration band, concentration |
 | `mart_reallocation` | one row per scenario share: the pool, who funds it, who receives it, and the per-person gain |
+| `mart_robustness` | the short list under six readings, with each country's rank under each |
+| `mart_convergence` | need in 2015 against the latest reading, with post-2015 money per person |
 | `site/index.html` | the same result as a self-contained interactive page |
 
 Both ranks are size-neutral, so a small island state and a large borrower are compared on
@@ -105,27 +109,28 @@ carrying their allocation gap.</em></p>
 Choosing an entry filters the table, scrolls to the row and highlights it; the count under the
 paragraph heading keeps the filter legible rather than silent.
 
-Three further elements carry the rest of the analysis: a scatter of need against financing per
-person with the review corner shaded, a sector table with shares of classified value, and a
-regional table. The scatter is interactive: hovering a point opens a country card with need, financing per
-person, allocation gap and operations, and clicking it highlights that country in the short
-list. All of them read from the same embedded payload, so the page and the CSVs in
-`data/marts/` cannot disagree.
+Five further elements carry the rest of the analysis: a scatter of need against financing per
+person with the review corner shaded, the robustness matrix that reruns the short list six ways,
+a drift panel that puts the change in need since 2015 against where each country started, a
+sector table with shares of classified value, and a regional table. The scatter is interactive:
+hovering a point opens a country card with need, financing per person, allocation gap and
+operations, and clicking it highlights that country in the short list. All of them read from the
+same embedded payload, so the page and the CSVs in `data/marts/` cannot disagree.
 
 ## Key findings
 
 Portfolio: **18,917 operations, US$1.59tn committed, US$331.9bn active** across 217 countries.
 20.8% of committed value is still live; the median operation runs 5.9 years.
 
-- **110 of 171 countries with measured need carry a positive allocation gap** — more need
+- **106 of 167 countries with measured need carry a positive allocation gap** — more need
   than financing, once both are expressed as ranks.
 - **The strongest case is a country that a quadrant view rejects.** The Democratic Republic of
-  Congo ranks 8th on the gap (need 87.7 of 100, US$61 per person, gap +0.52) yet holds 180
+  Congo ranks sixth on the gap (need 72.6 of 100, US$61 per person, gap +0.54) yet holds 180
   operations. It sits in the "aligned" cell of a hard 3×3 because its portfolio tercile is not
-  the bottom one. Chad is the same shape at a smaller scale: need 81.0, US$76 per person,
-  100 operations, gap +0.46. Both are portfolio-review candidates, not funding gaps.
+  the bottom one. Chad is the same shape at a smaller scale: need 64.4, US$76 per person,
+  100 operations, gap +0.48. Both are portfolio-review candidates, not funding gaps.
 - **The top of the list is not the same population as the biggest borrowers.** Zimbabwe
-  (gap +0.92) and DPR Korea (+0.84) lead on need with no active operations at all, while
+  (gap +0.92) and DPR Korea (+0.86) lead on need with no active operations at all, while
   large portfolios such as India and Brazil sit near the middle. Absolute commitment and
   per-capita financing rank countries differently, and only the second answers the question.
 - **Sector concentration is moderate**: Herfindahl index 0.120 on classified value, led by
@@ -134,6 +139,51 @@ Portfolio: **18,917 operations, US$1.59tn committed, US$331.9bn active** across 
   environment and climate 0.5%.
 - **The book is slow-moving**: only 13.1% of operations are active, and 4.6% have a planned
   duration over ten years.
+
+## Does the short list survive a different reading?
+
+The ranking weights four gaps equally. That is a choice, not a fact, so the model reruns it six
+ways — dropping each indicator in turn, and once under a single-worst-indicator rule — and
+publishes all six rankings as `mart_robustness`:
+
+<p align="center">
+  <img src="docs/img/robustness.png" alt="The robustness matrix: six readings of the same 25 countries" width="900">
+</p>
+
+- **14 of the 25 hold their place under all six readings.** The centre of the list is a property
+  of the data, not of the weighting.
+- **Water does most of the work.** Drop the drinking-water gap and six countries leave the list,
+  because their water coverage is high enough to carry the other three. Russia falls 85 places,
+  Algeria 38.
+- **Two entries are fragile.** Malawi holds in three readings, Niger in two; drop the water gap
+  and both leave, drop electricity and Niger leaves as well. Rank carries the evidence: Niger
+  sits 53rd when the electricity gap is removed, from 24th on the published ranking.
+- **Twelve countries outside the list are one reading away.** Sudan enters under three readings
+  (15th without water), Nepal is 10th on the worst dimension, Thailand 23rd without water. A
+  single-indicator reading is a different review, not a variant of the same one.
+
+## Is the picture moving?
+
+A gap is only actionable if it is closing or stuck. `mart_convergence` reads each country's need
+index in 2015 and again in its latest reporting year (2021–2024, which differs by country), and
+puts the change against the starting point:
+
+<p align="center">
+  <img src="docs/img/drift.png" alt="Need in 2015 against the change since, with the fitted line and the largest movers" width="900">
+</p>
+
+- **The index is converging, slowly.** 117 countries carry both readings: the median country fell
+  1.3 points and 45 fell by two or more, against three that rose. A fitted line of −0.13 points
+  per point of 2015 need means the countries that started worst improved most — those above 40
+  fell 5.3 points at the median, those below 10 barely moved (−0.3).
+- **At that slope, half the distance closes in about 46 years.** Inside a working career, well
+  outside the 2030 horizon the four indicators were chosen for.
+- **Money and progress are only loosely related.** Across the 82 countries that received
+  post-2015 commitments, the correlation between the change and financing per person is +0.15 —
+  barely visible. Zimbabwe cut its index 14.2 points on US$1.19 per person; Ukraine, at
+  US$1,051 per person, went the other way at +3.7.
+- **This is a two-point reading, not a trend.** The endpoint years differ by country and the
+  series are revised, which is why the page prints the window rather than a rate per year.
 
 ## The operating profile
 
@@ -163,15 +213,15 @@ carry the book.
 
 The natural follow-up question — *what would moving money actually buy?* — is answered with one
 number rather than an adjective. Five per cent of live value is $16.6bn; raised pro rata from the
-60 countries with a negative gap and a live portfolio, and paid pro rata to population across
+58 countries with a negative gap and a live portfolio, and paid pro rata to population across
 the 25 short-listed countries:
 
 | Quantity | Value |
 |---|---|
 | Value moved | $16.6bn (5.0% of $331.9bn live) |
-| Gain per person, 25 recipient countries | $26.96 |
-| Cost per person, 60 contributing countries | $16.26 |
-| People covered | 615m |
+| Gain per person, 25 recipient countries | $16.92 |
+| Cost per person, 58 contributing countries | $6.95 |
+| People covered | 981m |
 
 The slider on the page recomputes the pool at 1–10% with the same formula, so the arithmetic is
 auditable rather than asserted. The one-page business case — assumptions, what the number does
@@ -194,14 +244,14 @@ snapshot, not a recommendation.
    operation–country link, with commitments split evenly across recipients. These staging CSVs
    are generated on every build and are not versioned.
 4. **Model.** Plain SQL files run in filename order. Intermediates are `int_*`, published tables
-   are `mart_*`; nothing in a mart reads a CSV directly. Eleven models produce seven published
+   are `mart_*`; nothing in a mart reads a CSV directly. Fifteen models produce nine published
    tables.
-5. **Publish.** `pipeline/dq.py` runs 13 assertions over the warehouse and the marts and writes
+5. **Publish.** `pipeline/dq.py` runs 14 assertions over the warehouse and the marts and writes
    `mart_dq.csv`; the renderer reads that file, and a failing check stops the build before a
    page is written. The site then embeds the marts and the country geometry into one HTML file.
    Only D3 is fetched from a CDN; there is no runtime API call.
 
-The same five stages, with the same names, are printed on the page in section 06, so a reader of
+The same five stages, with the same names, are printed on the page in section 08, so a reader of
 the dashboard does not have to leave it to find out where the numbers came from.
 
 The pipeline is standard library only. No pandas, no ORM, no third-party runtime dependency —
@@ -227,11 +277,15 @@ models/
   25_mart_country_gap.sql      percentile ranks, allocation gap
   26_mart_priority.sql         the short list
   27_mart_reallocation.sql     one scenario row: pool, donors, recipients, per-person figures
+  28_int_country_need_history.sql  need by country and year, deduplicated and clamped
+  29_int_country_post2015.sql      commitments from 2015, per country
+  30_mart_convergence.sql      2015 against the latest reading, with money per person
+  31_mart_robustness.sql       the short list under six readings, with rank movement
 docs/
   methodology.md      every decision that changes a number
   data_dictionary.md  column-level contract for each table
   sector_taxonomy.md  the 12-group mapping and why it is a rule table
-  data_quality.md     the 13 checks, their thresholds, and what a failure means
+  data_quality.md     the 14 checks, their thresholds, and what a failure means
   reallocation-case.md  the five per cent scenario as a one-page business case
   decisions/          ADRs for the choices that had alternatives
   img/                screenshots of the page, and the pipeline diagram with its HTML source
@@ -239,12 +293,13 @@ sops/
   refresh-data.md     quarterly refresh, step by step
   add-an-indicator.md extending the need index
   review-a-portfolio.md  how the output is used in a review
-tests/test_pipeline.py   35 tests: reconciliation, bounds, ranking, operating profile,
-                         scenario arithmetic, the quality gate and page structure
+tests/test_pipeline.py   48 tests: reconciliation, bounds, ranking, robustness of the ranking,
+                         drift arithmetic, operating profile, scenario arithmetic, the
+                         quality gate and page structure
 data/
   raw/                committed snapshots and their manifest
   staging/            generated by build.py, git-ignored
-  marts/              the seven published marts, plus mart_dq.csv from the gate
+  marts/              the nine published marts, plus mart_dq.csv from the gate
   warehouse/          SQLite file, generated, git-ignored
 site/index.html          rendered output
 ```
@@ -258,7 +313,7 @@ reproducible from `pipeline/build.py` in a few seconds and stays out of the repo
 ```bash
 python pipeline/ingest.py          # fetch snapshots (≈2 min, needs network)
 python pipeline/build.py           # staging → warehouse → marts
-python pipeline/dq.py              # 13 checks; non-zero exit stops the build
+python pipeline/dq.py              # 14 checks; non-zero exit stops the build
 python pipeline/site.py            # render site/index.html
 python -m unittest discover -s tests
 ```
@@ -278,10 +333,10 @@ quality table the gate writes.
 ## Data quality
 
 <p align="center">
-  <img src="docs/img/dq.png" alt="The data-quality table on the page: 13 checks, all passing" width="880">
+  <img src="docs/img/dq.png" alt="The data-quality table on the page: 14 checks, all passing" width="880">
 </p>
 
-Thirteen checks run between the build and the render, and the page prints their result rather
+Fourteen checks run between the build and the render, and the page prints their result rather
 than inviting the reader to trust the pipeline. They fall into five kinds:
 
 - **Integrity** — one row per project, every country link resolving to a known ISO-3.
@@ -289,7 +344,7 @@ than inviting the reader to trust the pipeline. They fall into five kinds:
   agreeing with the portfolio total to within 0.5%, and the operating buckets partitioning the
   book.
 - **Coverage and completeness floors** — 83.4% of register records retained, 80.2% of operations
-  with an approval date, 80.1% of value classified, 171 countries with a need index.
+  with an approval date, 80.1% of value classified, 167 countries with a need index.
 - **Bounds** — the allocation gap staying inside its construction range.
 - **Scenario consistency** — the pool equalling its stated share of live value, so the slider
   and the static text cannot drift apart.

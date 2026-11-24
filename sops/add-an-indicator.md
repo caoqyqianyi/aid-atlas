@@ -6,7 +6,7 @@ Adding a fifth changes every rank, so it is a methodology change, not a data cha
 ## 1. Qualify the indicator
 
 It must have (a) a numeric 2030 target of 0 or 100, (b) national totals in the SDG API,
-(c) coverage for most of the 171 countries already ranked. An indicator with a target of
+(c) coverage for most of the 167 countries already ranked. An indicator with a target of
 "halve by 2030" does not qualify without inventing a baseline year.
 
 ## 2. Confirm the series code

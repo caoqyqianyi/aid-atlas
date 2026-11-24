@@ -235,6 +235,94 @@ class TestDataQuality(unittest.TestCase):
         self.assertGreaterEqual(len(self.checks), 12)
 
 
+class TestRobustness(unittest.TestCase):
+    """The six readings must agree with the published ranking where they should."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = read_csv(ROOT / "data" / "marts" / "mart_robustness.csv")
+        cls.country = {r["iso3"]: r for r in read_csv(ROOT / "data" / "marts" / "mart_country.csv")}
+
+    def _variant(self, key):
+        return [r for r in self.rows if r["variant"] == key]
+
+    def test_all_six_readings_are_present(self):
+        keys = {r["variant"] for r in self.rows}
+        self.assertEqual(keys, {"equal", "no_poverty", "no_hunger", "no_water",
+                                "no_energy", "worst"})
+
+    def test_each_reading_ranks_the_same_population(self):
+        sizes = {len(self._variant(k)) for k in
+                 ("equal", "no_poverty", "no_hunger", "no_water", "no_energy", "worst")}
+        self.assertEqual(len(sizes), 1)
+        self.assertGreater(sizes.pop(), 150)
+
+    def test_baseline_rerun_reproduces_the_published_gap(self):
+        # The equal-weight column is a re-implementation of model 25. If the two
+        # ever disagree, the matrix is drawing a different ranking from the
+        # table above it.
+        worst = 0.0
+        for r in self._variant("equal"):
+            published = float(self.country[r["iso3"]]["allocation_gap"])
+            worst = max(worst, abs(float(r["allocation_gap"]) - published))
+        self.assertLess(worst, 0.0002)
+
+    def test_every_reading_produces_a_top_25(self):
+        for key in ("equal", "no_poverty", "no_hunger", "no_water", "no_energy", "worst"):
+            in_list = [r for r in self._variant(key) if r["in_top25"] == "1"]
+            self.assertEqual(len(in_list), 25, key)
+
+    def test_ranks_are_unique_within_a_reading(self):
+        for key in ("equal", "no_poverty", "no_hunger", "no_water", "no_energy", "worst"):
+            ranks = [int(r["rank"]) for r in self._variant(key)]
+            self.assertEqual(len(ranks), len(set(ranks)), key)
+            self.assertEqual(sorted(ranks)[0], 1, key)
+
+    def test_shortlist_rank_marks_exactly_the_25(self):
+        marked = {r["iso3"] for r in self.rows if r["shortlist_rank"]}
+        self.assertEqual(len(marked), 25)
+
+
+class TestConvergence(unittest.TestCase):
+    """The drift layer is an arithmetic claim, so it gets arithmetic tests."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = read_csv(ROOT / "data" / "marts" / "mart_convergence.csv")
+        cls.country = {r["iso3"]: r for r in read_csv(ROOT / "data" / "marts" / "mart_country.csv")}
+
+    def test_one_row_per_country(self):
+        iso = [r["iso3"] for r in self.rows]
+        self.assertEqual(len(iso), len(set(iso)))
+
+    def test_delta_is_the_difference_of_the_two_readings(self):
+        for r in self.rows:
+            drift = float(r["delta_pp"]) - (float(r["need_latest"]) - float(r["need_2015"]))
+            self.assertLess(abs(drift), 0.02, r["iso3"])
+
+    def test_readings_sit_inside_the_index_bounds(self):
+        for r in self.rows:
+            for column in ("need_2015", "need_latest"):
+                value = float(r[column])
+                self.assertGreaterEqual(value, 0.0, r["iso3"])
+                self.assertLessEqual(value, 100.0, r["iso3"])
+
+    def test_latest_reading_is_recent(self):
+        years = [int(r["latest_year"]) for r in self.rows]
+        self.assertGreaterEqual(min(years), 2021)
+        self.assertLessEqual(max(years), 2024)
+
+    def test_post_2015_money_is_per_person(self):
+        for r in self.rows:
+            population = float(r["population"])
+            self.assertGreater(population, 0, r["iso3"])
+            implied = float(r["post2015_value"]) / population
+            self.assertLess(abs(float(r["post2015_pc"]) - implied), 0.1, r["iso3"])
+
+    def test_enough_countries_report_both_years(self):
+        self.assertGreaterEqual(len(self.rows), 100)
+
+
 class TestRenderedPage(unittest.TestCase):
     """The page is the deliverable, so its structure is asserted, not assumed."""
 
@@ -243,7 +331,8 @@ class TestRenderedPage(unittest.TestCase):
         cls.html = (ROOT / "site" / "index.html").read_text(encoding="utf-8")
 
     def test_sections_render_in_order(self):
-        ids = ["overview", "countries", "portfolio", "operating", "method"]
+        ids = ["overview", "countries", "robustness", "trend", "portfolio",
+               "operating", "method"]
         positions = [self.html.index('id="%s"' % i) for i in ids]
         self.assertEqual(positions, sorted(positions))
 
@@ -253,6 +342,10 @@ class TestRenderedPage(unittest.TestCase):
 
     def test_payload_is_embedded_once(self):
         self.assertEqual(self.html.count("const DATA = "), 1)
+
+    def test_the_two_new_panels_have_somewhere_to_draw(self):
+        for marker in ('id="robusttable"', 'id="rob-summary"', 'id="conv"', 'id="movertable"'):
+            self.assertIn(marker, self.html)
 
     def test_identity_and_data_links_go_to_different_places(self):
         # "Aid Atlas" returns to the top of the page; "Data" leaves for the CSV marts.

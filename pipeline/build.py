@@ -21,6 +21,7 @@ from __future__ import annotations
 import csv
 import gzip
 import json
+import math
 import re
 import sqlite3
 from datetime import date, datetime
@@ -263,11 +264,20 @@ def build_staging() -> dict[str, int]:
     country_payload = read_snapshot("country_codes")["rows"]
     m49_to_iso3 = {row["m49"]: row["iso3"] for row in country_payload if row.get("m49")}
     sdg_rows = []
+    sdg_nonfinite = 0
     for code, observations in sdg_payload["series"].items():
         for obs in observations:
             iso3 = m49_to_iso3.get(str(obs["m49"]))
-            if iso3:
-                sdg_rows.append([code, iso3, int(obs["year"]), float(obs["value"])])
+            if not iso3:
+                continue
+            # Snapshots captured before the ingest guard still carry NaN
+            # placeholders. Drop them here as well, so the committed snapshot and
+            # a fresh download produce the same warehouse.
+            value = float(obs["value"])
+            if not math.isfinite(value):
+                sdg_nonfinite += 1
+                continue
+            sdg_rows.append([code, iso3, int(obs["year"]), value])
     write_csv(STAGING / "sdg_observations.csv", ["indicator", "iso3", "year", "value"], sdg_rows)
 
     population = read_snapshot("worldbank_population")["rows"]
@@ -279,7 +289,8 @@ def build_staging() -> dict[str, int]:
 
     print(
         f"  staging: {len(ops_rows)} operations, {len(country_rows)} country links, "
-        f"{len(sdg_rows)} SDG observations ({skipped_no_country} ops dropped without a country)"
+        f"{len(sdg_rows)} SDG observations ({sdg_nonfinite} NaN placeholders dropped, "
+        f"{skipped_no_country} ops dropped without a country)"
     )
     return {"ops": len(ops_rows), "op_country": len(country_rows), "sdg": len(sdg_rows)}
 

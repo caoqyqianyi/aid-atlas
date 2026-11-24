@@ -26,6 +26,7 @@ import hashlib
 import http.client
 import io
 import json
+import math
 import sys
 import time
 import urllib.error
@@ -242,6 +243,12 @@ def ingest_sdg(valid_m49: set[str]) -> dict:
                 try:
                     value = float(rec.get("value"))
                 except (TypeError, ValueError):
+                    continue
+                # The SDG API ships forward years with a NaN placeholder rather
+                # than a null. Keep it out of the snapshot: a NaN that reaches
+                # the warehouse reads as a real reading and silently becomes the
+                # largest gap in the country's index.
+                if not math.isfinite(value):
                     continue
                 rows.append({"m49": area, "year": int(float(year)), "value": value})
             page += 1

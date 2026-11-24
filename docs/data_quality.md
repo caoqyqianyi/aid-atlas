@@ -34,11 +34,12 @@ Output is one row per check:
 | dq_06 | Coverage | Register records retained in staging | ≥ 75% | 18,917 of 22,671 records (83.4%). The remainder carry no resolvable country code, are regional entries or repeat across pages; a drop below 75% would mean the parser, not the register, changed |
 | dq_07 | Completeness | Operations with an approval date | ≥ 75% | 3,752 operations carry no date (80.2% dated). Cohorts and duration bands depend on this field, so a collapse would quietly move value into "No approval date" |
 | dq_08 | Completeness | Value with a sector classification | ≥ 75% | 19.9% of value is unclassified. The sector view excludes it from the denominator rather than pooling it into an "other" bar; above a quarter unclassified the view stops describing the book |
-| dq_09 | Coverage | Countries carrying a need index | ≥ 150 countries | 171 of 217. The ranking excludes countries with fewer than three of the four series, which is deliberate; the floor guards against the indicator API returning less than the agreed four |
+| dq_09 | Coverage | Countries carrying a need index | ≥ 150 countries | 167 of 217. The ranking excludes countries with fewer than three of the four series, which is deliberate; the floor guards against the indicator API returning less than the agreed four |
 | dq_10 | Bounds | Allocation gap inside [-1, 1] | ≤ 1.0 | The gap is a difference of two percentile ranks, so it is bounded by construction; a breach would mean the rank scale was rebuilt |
 | dq_11 | Uniqueness | Short-list ranks are 1…25 without gaps | 25 distinct | The site prints "the 25 on the short list"; a gap or duplicate would make that sentence false |
 | dq_12 | Scenario | Pool equals the stated share of live value | < 1% | The page lets a reader move the share; the mart row and the recomputed pool must agree so the slider and the static text cannot drift apart |
 | dq_13 | Reconciliation | Operating buckets sum to the portfolio total | < $0.01 | Status, duration and cohort are meant to partition the book; this is the check that keeps them exhaustive |
+| dq_14 | Bounds | SDG observations are numeric and inside 0–100 | bad rows = 0 | The indicator API returns `NaN` for the current-year placeholder row, and `float('NaN')` does not raise, so a text `nan` reached the staging table. The clamp turned it into 100 and pushed 169 countries to a full hunger gap; this check is the one that would have caught it in CI rather than in a chart |
 
 ## What happens on a failure
 

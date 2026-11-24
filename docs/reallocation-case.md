@@ -16,10 +16,10 @@ an adjective.
 
 1. **The pool.** Five per cent of the value still live at the snapshot date:
    `0.05 × $331.9bn = $16.6bn`. Commitment, not disbursement — see the caveat below.
-2. **Who pays.** Countries with a negative allocation gap *and* a live portfolio: 60 countries
+2. **Who pays.** Countries with a negative allocation gap *and* a live portfolio: 58 countries
    holding $115.1bn of active value. Each contributes in proportion to its live value, so no
    country is asked for more than a twentieth of what it already holds.
-3. **Who receives.** The 25 countries at the top of the short list, 615 million people.
+3. **Who receives.** The 25 countries at the top of the short list, 981 million people.
 4. **How much per person.** Distributed in proportion to population, so the gain per person is
    identical in every recipient country by construction — the model is deliberately blind to
    which country is which once a country is on the list.
@@ -29,9 +29,9 @@ an adjective.
 | Quantity | Value |
 |---|---|
 | Value moved | **$16.6bn** (5.0% of $331.9bn live) |
-| Gain per person, 25 recipient countries | **$26.96** |
-| People covered | 615m |
-| Cost per person, 60 contributing countries | **$16.26** |
+| Gain per person, 25 recipient countries | **$16.92** |
+| People covered | 981m |
+| Cost per person, 58 contributing countries | **$6.95** |
 | Contributors' population | 1.02bn |
 
 Two numbers, one ratio: a person in a recipient country gains about $27, a person in a
@@ -76,7 +76,7 @@ supplies the first two as arithmetic and the third as a gap in the data.
 
 ```
 make build                       # staging, warehouse, 11 models
-python pipeline/dq.py            # 13 checks, including the pool reconciliation
+python pipeline/dq.py            # 14 checks, including the pool reconciliation
 python pipeline/site.py          # page; move the slider to change the share
 ```
 

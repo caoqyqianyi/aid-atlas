@@ -1,26 +1,26 @@
 name,iso3,region,income_level,sdg_gap_index,need_tercile,portfolio_tercile,quadrant,financing_pc,population,population_year,n_ops,active_commitment,total_commitment,median_impl_years,allocation_gap,priority_rank
-Zimbabwe,ZWE,Sub-Saharan Africa,Lower middle income,67.455324085,3,1,high need / thin portfolio,0.0,16950795.0,2025,72,0.0,2792200000.0,5.91,0.9235,1
-"Korea, Dem. People's Rep.",PRK,East Asia & Pacific,Low income,57.329287719999996,3,1,high need / thin portfolio,0.0,26571036.0,2025,0,0,0,,0.8412,2
-Trinidad and Tobago,TTO,Latin America & Caribbean,High income,43.54357910000001,3,1,high need / thin portfolio,0.0,1367764.0,2025,23,0,319650000.0,6.62,0.6882,3
-Syrian Arab Republic,SYR,"Middle East, North Africa, Afghanistan & Pakistan",Low income,42.9,3,1,high need / thin portfolio,0.0,25620427.0,2025,27,0,700500000.0,7.16,0.6706,4
-"Venezuela, RB",VEN,Latin America & Caribbean,Lower middle income,36.56666666666667,2,1,aligned,0.0,28516896.0,2025,41,0,2955800000.0,5.82,0.5765,5
-French Polynesia,PYF,East Asia & Pacific,High income,36.51709493,2,1,aligned,0.0,282465.0,2025,0,0,0,,0.5706,6
-Oman,OMN,"Middle East, North Africa, Afghanistan & Pakistan",High income,36.29960886666667,2,1,aligned,0.0,5494691.0,2025,11,0,157100000.0,7.08,0.5647,7
-"Congo, Dem. Rep.",COD,Sub-Saharan Africa,Low income,87.73183794,3,2,aligned,60.76353568887921,112832473.0,2025,180,6856100000.0,15929150000.0,6.1899999999999995,0.5235,8
-Turkmenistan,TKM,Europe & Central Asia,Upper middle income,35.048817953333334,2,1,aligned,0.0,7618847.0,2025,11,0,305570000.0,6.76,0.5118,9
-New Caledonia,NCL,East Asia & Pacific,High income,34.37823740666666,2,1,aligned,0.0,295333.0,2025,0,0,0,,0.4882,10
-Barbados,BRB,Latin America & Caribbean,High income,33.90929666666667,2,1,aligned,0.0,282623.0,2025,21,0.0,403480000.0,6.495,0.4706,11
-Chad,TCD,Sub-Saharan Africa,Low income,80.99928087225001,3,2,aligned,76.47222240076215,21003705.0,2025,100,1606200000.0,3579010000.0,5.765000000000001,0.4647,12
-Mali,MLI,Sub-Saharan Africa,Low income,63.76943333333333,3,2,aligned,39.928455382892714,25198821.0,2025,159,1006150000.0,5708200000.0,6.57,0.4529,13
-Papua New Guinea,PNG,East Asia & Pacific,Lower middle income,69.63333333333333,3,2,aligned,63.412766378913624,10762817.0,2025,91,682500000.0,2573640000.0,6.04,0.4471,14
-South Sudan,SSD,Sub-Saharan Africa,Low income,90.36666666666667,3,2,aligned,94.30798205695267,12188788.0,2025,56,1149500000.0,1748900000.0,4.85,0.4353,15
-Australia,AUS,East Asia & Pacific,High income,33.63333333333333,2,1,aligned,0.0,27614411.0,2025,7,0,417700000.0,2.23,0.4353,16
-Namibia,NAM,Sub-Saharan Africa,Lower middle income,56.66302999999999,3,2,aligned,32.33299362134702,3092816.0,2025,12,100000000.0,130000000.0,2.11,0.4235,17
-Uganda,UGA,Sub-Saharan Africa,Low income,71.6007194525,3,2,aligned,79.81333969473597,51384894.0,2025,221,4101200000.0,14703480000.0,6.14,0.4176,18
-Guinea-Bissau,GNB,Sub-Saharan Africa,Low income,67.1962285325,3,2,aligned,73.34914414884986,2249515.0,2025,57,165000000.0,616750000.0,5.62,0.4176,19
-Afghanistan,AFG,"Middle East, North Africa, Afghanistan & Pakistan",Low income,60.54842605666666,3,2,aligned,46.74287956254832,43844111.0,2025,196,2049400000.0,5806390000.0,5.83,0.4118,20
-Sudan,SDN,Sub-Saharan Africa,Low income,48.03333333333333,3,2,aligned,3.6003149462603634,51662147.0,2025,115,186000000.0,5326900000.0,5.76,0.4118,21
-Sierra Leone,SLE,Sub-Saharan Africa,Low income,72.7075340425,3,2,aligned,84.48043117560343,8819794.0,2025,126,745100000.0,2123870000.0,5.285,0.4118,22
-Myanmar,MMR,East Asia & Pacific,Lower middle income,43.884380965,3,2,aligned,1.8231325179604077,54850648.0,2025,70,100000000.0,4691400000.0,7.05,0.3941,23
-Thailand,THA,East Asia & Pacific,Upper middle income,33.333333333333336,2,1,aligned,0.0,71619863.0,2025,179,0.0,11031090000.0,5.699999999999999,0.3882,24
-New Zealand,NZL,East Asia & Pacific,High income,33.333333333333336,2,1,aligned,0.0,5324700.0,2025,6,0,126800000.0,4.42,0.3882,25
+Zimbabwe,ZWE,Sub-Saharan Africa,Lower middle income,47.055324085,3,1,high need / thin portfolio,0.0,16950795.0,2025,72,0.0,2792200000.0,5.91,0.9157,1
+"Korea, Dem. People's Rep.",PRK,East Asia & Pacific,Low income,39.66262105333333,3,1,high need / thin portfolio,0.0,26571036.0,2025,0,0,0,,0.8554,2
+Naoero,NRU,East Asia & Pacific,High income,30.34561259,3,1,high need / thin portfolio,0.0,12025.0,2025,0,0,0,,0.7892,3
+Syrian Arab Republic,SYR,"Middle East, North Africa, Afghanistan & Pakistan",Low income,23.166666666666668,3,1,high need / thin portfolio,0.0,25620427.0,2025,27,0,700500000.0,7.16,0.7108,4
+Trinidad and Tobago,TTO,Latin America & Caribbean,High income,13.676912433333335,2,1,aligned,0.0,1367764.0,2025,23,0,319650000.0,6.62,0.5723,5
+"Congo, Dem. Rep.",COD,Sub-Saharan Africa,Low income,72.60683793999999,3,2,aligned,60.76353568887921,112832473.0,2025,180,6856100000.0,15929150000.0,6.1899999999999995,0.5361,6
+Chad,TCD,Sub-Saharan Africa,Low income,64.39928087224999,3,2,aligned,76.47222240076215,21003705.0,2025,100,1606200000.0,3579010000.0,5.765000000000001,0.4759,7
+Algeria,DZA,"Middle East, North Africa, Afghanistan & Pakistan",Upper middle income,8.392704392499999,2,1,aligned,0.0,47435312.0,2025,87,0,6396830000.0,6.04,0.4518,8
+Russian Federation,RUS,Europe & Central Asia,High income,7.9464243566666655,2,1,aligned,0.0,143513328.0,2025,114,0,18230300000.0,7.34,0.4337,9
+Guinea-Bissau,GNB,Sub-Saharan Africa,Low income,47.1962285325,3,2,aligned,73.34914414884986,2249515.0,2025,57,165000000.0,616750000.0,5.62,0.4337,10
+Uganda,UGA,Sub-Saharan Africa,Low income,51.825719452499996,3,2,aligned,79.81333969473597,51384894.0,2025,221,4101200000.0,14703480000.0,6.14,0.4277,11
+Papua New Guinea,PNG,East Asia & Pacific,Lower middle income,46.46666666666667,3,2,aligned,63.412766378913624,10762817.0,2025,91,682500000.0,2573640000.0,6.04,0.4277,12
+Sierra Leone,SLE,Sub-Saharan Africa,Low income,54.032534042500004,3,2,aligned,84.48043117560343,8819794.0,2025,126,745100000.0,2123870000.0,5.285,0.4217,13
+South Sudan,SSD,Sub-Saharan Africa,Low income,63.4,3,2,aligned,94.30798205695267,12188788.0,2025,56,1149500000.0,1748900000.0,4.85,0.4157,14
+Afghanistan,AFG,"Middle East, North Africa, Afghanistan & Pakistan",Low income,36.48175939,3,2,aligned,46.74287956254832,43844111.0,2025,196,2049400000.0,5806390000.0,5.83,0.4096,15
+Mali,MLI,Sub-Saharan Africa,Low income,34.469433333333335,3,2,aligned,39.928455382892714,25198821.0,2025,159,1006150000.0,5708200000.0,6.57,0.4036,16
+Nigeria,NGA,Sub-Saharan Africa,Lower middle income,41.39313794,3,2,aligned,72.27912396369702,237527782.0,2025,268,17168300000.0,39893720000.0,7.21,0.3916,17
+Madagascar,MDG,Sub-Saharan Africa,Low income,61.6110014925,3,2,aligned,97.96376238757182,32740678.0,2025,191,3207400000.0,8511750000.0,6.245,0.3855,18
+Namibia,NAM,Sub-Saharan Africa,Lower middle income,30.029696666666666,3,2,aligned,32.33299362134702,3092816.0,2025,12,100000000.0,130000000.0,2.11,0.3855,19
+Myanmar,MMR,East Asia & Pacific,Lower middle income,20.034380964999997,3,2,aligned,1.8231325179604077,54850648.0,2025,70,100000000.0,4691400000.0,7.05,0.3795,20
+Oman,OMN,"Middle East, North Africa, Afghanistan & Pakistan",High income,5.332942200000002,2,1,aligned,0.0,5494691.0,2025,11,0,157100000.0,7.08,0.3614,21
+"Venezuela, RB",VEN,Latin America & Caribbean,Lower middle income,5.0,2,1,aligned,0.0,28516896.0,2025,41,0,2955800000.0,5.82,0.3494,22
+Malawi,MWI,Sub-Saharan Africa,Low income,66.529586505,3,3,aligned,113.70572359169827,22216120.0,2025,194,2526100000.0,8160290000.0,6.03,0.3373,23
+Niger,NER,Sub-Saharan Africa,Low income,48.70078,3,2,aligned,103.15987656777492,27917831.0,2025,140,2880000000.0,7901350000.0,5.975,0.3373,24
+Guatemala,GTM,Latin America & Caribbean,Upper middle income,21.440664175,3,2,aligned,18.72871514967374,18687881.0,2025,88,350000000.0,6072610000.0,6.51,0.3373,25

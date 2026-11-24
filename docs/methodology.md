@@ -127,7 +127,27 @@ and any reader use the same boundaries.
 
 `mart_priority` ranks by `allocation_gap` alone, not by a hard quadrant. A 3×3 cell is easier to
 defend in a slide and discards the countries just outside it: the Democratic Republic of Congo
-and Chad both fall into "aligned" by tercile pair while ranking 8th and 12th on the gap.
+and Chad both fall into "aligned" by tercile pair while ranking 6th and 15th on the gap.
+
+### Six readings, not one weighting
+
+The index is an unweighted mean, which is a design decision rather than a measurement.
+`mart_robustness` therefore reruns the whole ranking under six readings — dropping each of the
+four gaps in turn, plus a variant that scores a country on its single worst gap — and publishes
+all six. Each country keeps its rank under every reading, so a reviewer can see whether a
+country is on the short list because of its condition or because of the weight given to one
+indicator.
+
+Two properties make this a reading rather than a second model. Every variant scores all 167
+countries, and the `equal` variant reproduces `mart_country.allocation_gap` to four decimal
+places (asserted in `tests/`), so a disagreement between the matrix and the table above it is a
+test failure rather than a footnote. Ranks are row numbers with a declared tiebreak (financing,
+then need, then ISO-3) rather than `RANK()`, because a tie at the 25th place would otherwise
+seat 26 countries and make "25 of 25" false.
+
+The matrix is informative in both directions: 14 of the 25 hold their place under every reading,
+and the entries that do move name the indicator doing the work — Russia falls 85 places when the
+water gap is removed, Niger leaves the list once water or energy is dropped.
 
 ## 7. Sector taxonomy
 
@@ -161,12 +181,31 @@ delivery time.
 4. **Comparability across register and indicators.** Portfolio data is administrative and
    continuously revised; SDG series are statistical and lag by years. The two layers are joined
    by country and read as a snapshot, not a time series.
-5. **Proxy portfolio.** The register used here is one large sovereign portfolio, not the
+5. **Drift is a two-point reading.** `mart_convergence` compares 2015 with each country's
+   latest reporting year, which ranges from 2021 to 2024. It measures whether the index moved,
+   not when; the half-life figure quoted on the page assumes that the average change over those
+   nine years repeats at a constant rate, which is a projection, not an observation.
+6. **Proxy portfolio.** The register used here is one large sovereign portfolio, not the
    portfolio of any single agency. It answers the question at the level of the development
    finance system; an institutional portfolio would need its own adapter, which the ingest layer
    is structured to take.
-6. **Not an evaluative claim.** The gap is a triage device. Treating it as evidence of
+7. **Not an evaluative claim.** The gap is a triage device. Treating it as evidence of
    misallocation would be a category error.
+
+### From stock to flow
+
+The ranking is a stock comparison: everything ever committed, against need as measured today.
+Two additional tables turn it into something a reviewer can act on.
+
+`mart_convergence` isolates the **flow** — commitments approved from 2015 onward, per country
+and per person — and sets the change in need beside it. The correlation is +0.15 across the 82
+countries that received anything, which is the finding the table exists to expose rather than
+to bury: money and measured progress are close to independent at this level of aggregation.
+
+The two tables are deliberately not merged. The stock ranking answers *where the gap is
+largest*; the flow layer answers *whether the gap is closing, and what has been spent trying*.
+A country can score badly on both and appear in each table for a different reason, which is
+the distinction between a portfolio review and an evaluation.
 
 ## 10. Reproducibility
 
