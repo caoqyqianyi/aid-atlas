@@ -109,13 +109,49 @@ carrying their allocation gap.</em></p>
 Choosing an entry filters the table, scrolls to the row and highlights it; the count under the
 paragraph heading keeps the filter legible rather than silent.
 
+The page also has to work for a reader who does not spend their day in a spreadsheet — a
+programme officer, a donor, a journalist. Five things carry that load:
+
+- **Four stops at the top of the page.** A strip under the headline offers the map, the short
+  list, the direction of travel and the method, so a first visit does not start with a menu.
+- **A country file, not a tooltip.** Clicking a country on the map, a row of the short list, a
+  row of the matrix or a dot in the drift panel opens a card with the four gaps as plain bars,
+  the six numbers a reviewer would otherwise look up in three files, a one-sentence verdict, the
+  country's rank under each of the six readings, and what changed since 2015.
+
+<p align="center">
+  <img src="docs/img/countryfile.png" alt="Country file for Zimbabwe: four gap bars, six numbers, ranks under each reading" width="640">
+</p>
+
+<p align="center"><em>Zimbabwe: need 47.1, no approved financing per person, gap +0.92, first on
+the list under every reading. The verdict line is written for a reader who wants the point, not
+the arithmetic.</em></p>
+
+- **The matrix sorts itself.** Click a column header to re-rank all 25 under that reading, and
+  the checkbox beside it drops countries that are not on the published list. Hovering a cell says
+  where a country moves from, in places.
+- **You set the weights.** Four sliders re-run the published ranking in the browser, using the
+  same arithmetic as the SQL model: weighted mean of the gaps a country reports, percentile ranks
+  on need and financing per person, then the difference. At equal weights the panel reproduces
+  the published 25 exactly; setting water to zero drops the same six countries the matrix drops.
+
+<p align="center">
+  <img src="docs/img/weights.png" alt="Weight sliders above a live top ten with a versus-published column" width="880">
+</p>
+
+<p align="center"><em>Equal weights: 25 of 25 survive, in the same order. Every change is a
+reading of the data, not a write to it — the CSVs stay as published.</em></p>
+
+- **Seven terms, in plain words.** A short glossary closes the method section: need index,
+  financing per person, percentile rank, allocation gap, short list, reading, stakeholder view.
+
 Five further elements carry the rest of the analysis: a scatter of need against financing per
 person with the review corner shaded, the robustness matrix that reruns the short list six ways,
 a drift panel that puts the change in need since 2015 against where each country started, a
-sector table with shares of classified value, and a regional table. The scatter is interactive:
-hovering a point opens a country card with need, financing per person, allocation gap and
-operations, and clicking it highlights that country in the short list. All of them read from the
-same embedded payload, so the page and the CSVs in `data/marts/` cannot disagree.
+sector table with shares of classified value, and a regional table. The scatter and the drift
+panel are live: hovering a point opens the country card, and clicking it carries the country into
+the short-list table. All of them read from the same embedded payload, so the page and the CSVs in
+`data/marts/` cannot disagree.
 
 ## Key findings
 

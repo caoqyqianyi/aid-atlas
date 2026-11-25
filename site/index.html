@@ -208,6 +208,92 @@
   .capnote{font-size:.74rem;color:var(--ink);line-height:1.6;margin:.9rem 0 0;
         max-width:100%;border-top:1px solid var(--hair);padding-top:.7rem}
 
+  /* ---------- on-ramp, country file, weights, glossary ---------- */
+  .start{background:var(--band,#f7f8f9);border-bottom:1px solid var(--rule)}
+  .start .in{max-width:1180px;margin:0 auto;padding:.85rem 24px;display:grid;
+        grid-template-columns:repeat(4,1fr);gap:1.4rem}
+  .start a{display:flex;gap:.55rem;align-items:flex-start;color:var(--navy);
+        border-bottom:1px solid transparent}
+  .start a:hover{border-bottom-color:var(--amber);text-decoration:none}
+  .start a .n{color:var(--amber);font-weight:700;font-size:.68rem;padding-top:.12rem}
+  .start a .t{display:flex;flex-direction:column;gap:.06rem}
+  .start a .t b{font-size:.78rem;font-weight:600}
+  .start a .t span{color:var(--muted);font-size:.71rem;line-height:1.45}
+
+  .cf{position:fixed;right:1.5rem;bottom:1.5rem;width:min(364px,calc(100vw - 2rem));
+        max-height:min(80vh,660px);overflow:auto;background:#fff;border:1px solid var(--rule);
+        border-top:3px solid var(--amber);box-shadow:0 16px 44px rgba(0,34,68,.22);z-index:60;
+        padding:1.05rem 1.2rem 1.1rem}
+  .cf[hidden]{display:none}
+  .cf .cf-x{position:absolute;top:.45rem;right:.55rem;border:0;background:none;font-size:1.05rem;
+        line-height:1;color:var(--muted);cursor:pointer}
+  .cf h4{margin:0 0 .08rem;font-size:1.04rem;color:var(--navy)}
+  .cf .meta{font-size:.7rem;color:var(--muted);margin-bottom:.7rem}
+  .cf .verdict{font-size:.78rem;line-height:1.52;color:var(--ink);background:#fcfaf3;
+        border-left:3px solid var(--amber);padding:.5rem .6rem;margin:0 0 .2rem}
+  .cf .verdict.quiet{border-left-color:var(--rule);background:#fbfbfc;color:var(--muted)}
+  .cf .lbl{font-size:.61rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+        margin:.85rem 0 .32rem}
+  .cf .barbox{display:grid;grid-template-columns:72px 1fr 42px;gap:.45rem;align-items:center;
+        font-size:.72rem;margin:.16rem 0}
+  .cf .track{height:7px;background:#eff1f2;position:relative}
+  .cf .fill{position:absolute;left:0;top:0;bottom:0;background:#e2a23a}
+  .cf .fill.none{background:#d7dbde}
+  .cf .val{text-align:right;font-variant-numeric:tabular-nums;color:var(--navy)}
+  .cf .kpis{display:grid;grid-template-columns:1fr 1fr;gap:.5rem .8rem;font-size:.75rem}
+  .cf .kpis .u{display:block;font-size:.6rem;color:var(--muted);letter-spacing:.07em;
+        text-transform:uppercase;margin-bottom:.08rem}
+  .cf .kpis b{font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums}
+  .cf .chips{display:flex;flex-wrap:wrap;gap:.28rem}
+  .cf .chipb{font-size:.63rem;padding:.12rem .38rem;border:1px solid var(--rule);color:var(--muted)}
+  .cf .chipb.on{border-color:#e2a23a;background:#fdf6e7;color:#7a5310}
+  .cf .drift{font-size:.76rem;line-height:1.55;margin:0}
+  .cf .foot{margin-top:.85rem;border-top:1px solid var(--hair);padding-top:.65rem}
+  .cf .go{border:1px solid var(--rule);background:#fff;color:var(--navy);font:inherit;
+        font-size:.71rem;padding:.34rem .6rem;cursor:pointer}
+  .cf .go:hover{border-color:var(--amber)}
+
+  .robtool{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin:.85rem 0 .1rem;
+        font-size:.71rem;color:var(--muted)}
+  .robtool label{display:flex;gap:.4rem;align-items:center;cursor:pointer}
+  .robtool input{accent-color:var(--navy)}
+  .robsort{color:#a85c10}
+  .matrix th.scol{cursor:pointer}
+  .matrix th.scol.on{color:#a85c10;box-shadow:inset 0 -2px 0 var(--amber)}
+  .matrix tbody tr{cursor:pointer}
+
+  .weights{margin-top:1rem;padding:1rem 1.1rem 1.1rem;border-top:3px solid var(--navy)}
+  .weights .whead{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+        flex-wrap:wrap}
+  .weights .whead h3{margin:0;font-size:.95rem;color:var(--navy)}
+  .weights .reset{border:1px solid var(--rule);background:#fff;font:inherit;font-size:.67rem;
+        color:var(--navy);padding:.24rem .5rem;cursor:pointer}
+  .weights .reset:hover{border-color:var(--amber)}
+  .wsliders{margin:.15rem 0 .9rem}
+  .wrow{display:grid;grid-template-columns:78px 1fr 22px;gap:.55rem;align-items:center;
+        font-size:.74rem;margin:.18rem 0}
+  .wrow input{width:100%;accent-color:var(--navy)}
+  .wrow .wv{text-align:right;color:var(--navy);font-variant-numeric:tabular-nums}
+  .wout{display:grid;grid-template-columns:1.08fr .92fr;gap:1.6rem;margin-top:.5rem;
+        align-items:start}
+  .wtable{font-size:.76rem;margin-top:0}
+  .wtable th,.wtable td{padding:.3rem .45rem}
+  .wtable .mv{font-size:.61rem;letter-spacing:.05em;text-transform:uppercase}
+  .wtable .mv.in{color:#a85c10}
+  .wtable .mv.out{color:#8a3b22}
+  .wtable .mv.same{color:var(--muted)}
+  .wout .say{font-size:.76rem;line-height:1.62;text-align:left;max-width:100%;margin:0 0 .7rem}
+  .wout .say b{color:var(--navy)}
+
+  .glossary{margin-top:1.7rem;border-top:1px solid var(--rule);padding-top:.85rem}
+  .glossary summary{cursor:pointer;font-size:.7rem;letter-spacing:.11em;text-transform:uppercase;
+        color:var(--navy);font-weight:600}
+  .glossary summary:hover{color:#a85c10}
+  .glossary dl{display:grid;grid-template-columns:186px 1fr;gap:.4rem 1.3rem;margin:.85rem 0 0;
+        font-size:.78rem}
+  .glossary dt{color:var(--navy);font-weight:600}
+  .glossary dd{margin:0;line-height:1.55;color:var(--ink)}
+
   /* ---------- method ---------- */
   .method{display:grid;grid-template-columns:1fr 1fr;gap:2.6rem}
   .note{font-size:.78rem;color:var(--muted);max-width:76ch;text-align:center;margin:.55rem auto 0}
@@ -228,6 +314,9 @@
     .tile:nth-child(2){border-right:0}
     .two,.three,.method,.scenario,.steps,.convwrap,footer .in{grid-template-columns:1fr}
     nav{display:none} h1{font-size:1.85rem}
+    .start .in{grid-template-columns:1fr 1fr;gap:1rem}
+    .cf{right:.6rem;bottom:.6rem;max-height:78vh;overflow:auto}
+    .wout{grid-template-columns:1fr;gap:1rem}
   }
 </style>
 </head>
@@ -278,6 +367,24 @@
   </div>
 </div>
 
+<aside class="cf" id="cf" hidden aria-live="polite" aria-label="Country file">
+  <button class="cf-x" id="cf-close" aria-label="Close the country file">&times;</button>
+  <div id="cf-body"></div>
+</aside>
+
+<div class="start">
+  <div class="in">
+    <a href="#countries"><span class="n">1</span><span class="t"><b>The map</b>
+      <span>where need outruns delivery</span></span></a>
+    <a href="#robustness"><span class="n">2</span><span class="t"><b>The short list</b>
+      <span>25 countries, and whether they hold</span></span></a>
+    <a href="#trend"><span class="n">3</span><span class="t"><b>The direction</b>
+      <span>is the gap closing?</span></span></a>
+    <a href="#method"><span class="n">4</span><span class="t"><b>The method</b>
+      <span>seven terms in plain words</span></span></a>
+  </div>
+</div>
+
 <div class="wrap">
 <div id="ctip"></div>
 
@@ -313,8 +420,9 @@
     <div id="tip"></div>
     <svg id="map" viewBox="0 0 1000 520" role="img" aria-label="World map of portfolio against need"></svg>
   </div>
-  <p class="note center">Grey areas have no polygon at the 1:110m simplification, or no measured
-  need. Small island states missing from the polygon set are still in the table and in
+  <p class="note center">Click a country to open its file: the four gaps, its position, and how it
+  ranks under each reading. Grey areas have no polygon at the 1:110m simplification, or no measured
+  need; small island states missing from the polygon set are still in the table and in
   <code>data/marts/mart_country.csv</code>.</p>
 </section>
 
@@ -352,6 +460,10 @@
   runs the same comparison five other ways - drop each indicator in turn, and take the single worst
   gap instead of the mean - over exactly the same countries. A move between columns is therefore a
   move in definition, not in data. <span class="qcount" id="rob-summary"></span></p>
+  <div class="robtool">
+    <label><input type="checkbox" id="robshow25"> Only the 25 on the published list</label>
+    <span class="robsort" id="robsort"></span>
+  </div>
   <div class="card matrixwrap">
     <table class="data matrix" id="robusttable">
       <thead><tr><th>Country</th><th class="n">Rank</th></tr></thead>
@@ -360,7 +472,34 @@
   </div>
   <p class="note">Darker cells sit closer to the top of the list. A grey number is a country that
   is still ranked under that reading, just outside the top 25 - it is entering or leaving, not
-  missing.</p>
+  missing. Click a column header to re-sort by that reading, and click any row for the country
+  file.</p>
+  <div class="card weights">
+    <div class="whead"><h3>You set the weights</h3>
+      <button class="reset" id="wreset">Reset to equal weights</button></div>
+    <div class="wout">
+      <div>
+        <div class="wsliders" id="wsliders"></div>
+        <table class="data wtable" id="wtable">
+          <thead><tr><th>#</th><th>Country</th><th style="text-align:right">Need</th>
+          <th style="text-align:right">$/person</th><th style="text-align:right">Gap</th>
+          <th>vs published</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div>
+        <p class="say">The published ranking is one reading of four equally weighted gaps. Move
+        the sliders and the same arithmetic runs in your browser: the weighted mean of the gaps
+        each country reports, percentile ranks on need and financing per person, then the
+        difference. Setting one weight to zero reproduces the matching column above.</p>
+        <p class="say" id="wnote2"></p>
+        <p class="say" id="wdrop"></p>
+        <p class="say" style="color:#6f7377">The published column is the equal-weight case and does
+        not move; this panel only changes the reading above it, never the files. Click a row for
+        the country file.</p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section class="sec" id="trend">
@@ -525,6 +664,34 @@
     <thead><tr><th>Check</th><th>What the number says</th><th style="text-align:right">Status</th></tr></thead>
     <tbody></tbody>
   </table>
+
+  <details class="glossary">
+    <summary>Seven terms, in plain words</summary>
+    <dl>
+      <dt>Need index</dt>
+      <dd>The share of a country's population without minimum services, averaged over four UN
+      indicators: poverty, hunger, safe drinking water and electricity. 0 means everyone covered;
+      100 means nobody.</dd>
+      <dt>Financing per person</dt>
+      <dd>Everything ever committed to the country, divided by its population. It is approval, not
+      money that has reached anyone.</dd>
+      <dt>Percentile rank</dt>
+      <dd>The country's position among the 167 ranked countries, from 0 (lowest) to 1 (highest).
+      It compares position, not size, so a small state is not penalised for being small.</dd>
+      <dt>Allocation gap</dt>
+      <dd>Need rank minus financing rank. Positive means more measured need than money; negative
+      means the opposite. It is a triage signal, not proof of misallocation.</dd>
+      <dt>Short list</dt>
+      <dd>The 25 countries with the largest positive gap: the population a portfolio review would
+      look at first, not a recommendation to move money.</dd>
+      <dt>Reading</dt>
+      <dd>One way of weighting the four indicators. Six readings are published, including one that
+      drops each indicator and one that scores a country on its single worst gap.</dd>
+      <dt>Stakeholder view</dt>
+      <dd>The country file: click any country on the map, in a table, in the matrix or on the drift
+      panel, and the same six numbers, four bars, six ranks and its change since 2015 open together.</dd>
+    </dl>
+  </details>
 </section>
 
 </div>
@@ -857,6 +1024,8 @@ const tb = document.querySelector('#blindtable tbody');
 DATA.priority.forEach((d, i) => {
   const tr = document.createElement('tr');
   tr.dataset.name = d.name;
+  tr.dataset.iso = d.iso3;
+  tr.style.cursor = 'pointer';
   const pc = d.pc > 0 ? '$' + (d.pc < 10 ? d.pc.toFixed(2) : d.pc.toFixed(0)) : 'none active';
   tr.innerHTML = '<td>' + d.name + '</td><td>' + (d.region || '') + '</td>' +
     '<td style="text-align:right">' + d.need.toFixed(1) + '</td>' +
@@ -1060,8 +1229,11 @@ const ht = document.querySelector('#healthtable tbody');
 (function robustness(){
   const r = DATA.robustness;
   const head = document.querySelector('#robusttable thead tr');
-  r.columns.forEach(col => {
+  r.columns.forEach(function(col, i){
     const th = document.createElement('th');
+    th.className = 'scol';
+    th.dataset.col = i;
+    th.title = 'Sort the matrix by this reading';
     th.innerHTML = col.label + '<span class="sub">' + col.kept + ' of 25 kept</span>';
     head.appendChild(th);
   });
@@ -1075,31 +1247,81 @@ const ht = document.querySelector('#healthtable tbody');
     return (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255 < 0.6;
   };
   const tb = document.querySelector('#robusttable tbody');
-  let banded = false;
-  r.rows.forEach(row => {
-    if (row.baseline === null && !banded) {
-      banded = true;
-      const band = document.createElement('tr');
-      band.className = 'band';
-      band.innerHTML = '<td colspan="8">Outside the short list - entering under another reading</td>';
-      tb.appendChild(band);
+  const hint = document.getElementById('robsort');
+  let sortCol = null;
+  let only25 = false;
+
+  function draw(){
+    tb.innerHTML = '';
+    let rows = r.rows.slice();
+    if (only25) rows = rows.filter(x => x.baseline !== null);
+    if (sortCol !== null){
+      rows.sort((a, b) => (a.ranks[sortCol] === null ? 999 : a.ranks[sortCol]) -
+                          (b.ranks[sortCol] === null ? 999 : b.ranks[sortCol]));
     }
-    const tr = document.createElement('tr');
-    if (row.baseline === null) tr.className = 'offs';
-    let cells = '<td>' + row.name + '</td><td class="n">' +
-      (row.baseline === null ? '' : row.baseline) + '</td>';
-    row.ranks.forEach(rank => {
-      if (rank !== null && rank <= 25) {
-        const bg = heat(rank);
-        cells += '<td style="background:' + bg + ';color:' + (dark(bg) ? '#ffffff' : '#4a3505') +
-          '">' + rank + '</td>';
-      } else {
-        cells += '<td><span class="out">' + (rank === null ? '-' : rank) + '</span></td>';
+    let banded = false;
+    rows.forEach(function(row){
+      // The band only makes sense in the published order; under a sort the
+      // table is a ranking of its own and the boundary is misleading.
+      if (sortCol === null && row.baseline === null && !banded){
+        banded = true;
+        const band = document.createElement('tr');
+        band.className = 'band';
+        band.innerHTML = '<td colspan="8">Outside the short list - entering under another reading</td>';
+        tb.appendChild(band);
       }
+      const tr = document.createElement('tr');
+      if (row.baseline === null) tr.className = 'offs';
+      const name = document.createElement('td');
+      name.textContent = row.name;
+      tr.appendChild(name);
+      const base = document.createElement('td');
+      base.className = 'n';
+      base.textContent = row.baseline === null ? '' : row.baseline;
+      tr.appendChild(base);
+      row.ranks.forEach(function(rank, i){
+        const col = r.columns[i];
+        const td = document.createElement('td');
+        if (rank !== null && rank <= 25){
+          const bg = heat(rank);
+          td.style.background = bg;
+          td.style.color = dark(bg) ? '#ffffff' : '#4a3505';
+          td.textContent = rank;
+        } else {
+          td.innerHTML = '<span class="out">' + (rank === null ? '-' : rank) + '</span>';
+        }
+        let tip = col.label + ': ' + (rank === null ? 'not ranked' : 'rank ' + rank) + '.';
+        if (row.baseline !== null && rank !== null){
+          const shift = row.baseline - rank;
+          tip += ' Published rank ' + row.baseline +
+            (shift === 0 ? ', unchanged.' : ', ' + Math.abs(shift) +
+             (shift > 0 ? ' places higher' : ' places lower') + '.');
+        } else if (row.baseline === null && rank !== null && rank <= 25){
+          tip += ' Not on the published list; it enters under this reading.';
+        }
+        td.title = tip;
+        tr.appendChild(td);
+      });
+      tr.addEventListener('click', () => openCountry(row.iso3));
+      tb.appendChild(tr);
     });
-    tr.innerHTML = cells;
-    tb.appendChild(tr);
+  }
+
+  head.querySelectorAll('th.scol').forEach(function(th){
+    th.addEventListener('click', function(){
+      const i = Number(th.dataset.col);
+      sortCol = (sortCol === i) ? null : i;
+      head.querySelectorAll('th.scol').forEach(o => o.classList.toggle('on', o === th && sortCol !== null));
+      hint.textContent = sortCol === null ? ''
+        : 'Sorted by ' + r.columns[sortCol].label + ' - click the header again to restore the published order.';
+      draw();
+    });
   });
+
+  const box = document.getElementById('robshow25');
+  box.addEventListener('change', function(){ only25 = box.checked; draw(); });
+
+  draw();
 
   const phrase = {equal: 'the baseline', no_poverty: 'dropping poverty', no_hunger: 'dropping hunger',
     no_water: 'dropping water', no_energy: 'dropping electricity', worst: 'using the worst dimension'};
@@ -1150,6 +1372,8 @@ const ht = document.querySelector('#healthtable tbody');
     .attr('fill', fill).attr('fill-opacity', .88)
     .attr('stroke', p => p.rank ? '#ffffff' : 'none')
     .attr('stroke-width', p => p.rank ? 1.5 : 0)
+    .style('cursor', 'pointer')
+    .on('click', (event, p) => openCountry(p.iso3))
     .append('title')
     .text(p => p.name + ' - ' + p.n15.toFixed(1) + ' in 2015, ' + p.n24.toFixed(1) + ' in ' +
       p.year + ' (' + (p.delta > 0 ? '+' : '') + p.delta.toFixed(1) + ' points); $' +
@@ -1221,6 +1445,215 @@ const ht = document.querySelector('#healthtable tbody');
 })();
 
 renderLegend();
+
+/* ---------- country file ---------- */
+const CF = document.getElementById('cf');
+const CFB = document.getElementById('cf-body');
+const CFLAB = ['Equal', '\u2212 poverty', '\u2212 hunger', '\u2212 water', '\u2212 electricity', 'Worst'];
+
+function money(v){
+  return '$' + (v >= 10 ? Math.round(v).toLocaleString('en-US') : v.toFixed(2));
+}
+
+function openCountry(iso){
+  const d = byIso.get(iso);
+  if (!d) return;
+  const rob = DATA.robustness.rows.find(x => x.iso3 === iso);
+  const conv = DATA.convergence.rows.find(x => x.iso3 === iso);
+  const four = [['Poverty', d.gap_poverty], ['Hunger', d.gap_hunger],
+                ['Water', d.gap_water], ['Electricity', d.gap_energy]];
+
+  let verdict, quiet = false;
+  if (!d.complete){
+    verdict = 'Not ranked: ' + (d.n_ind || 0) + ' of the four indicators carry a value in this snapshot.';
+    quiet = true;
+  } else if (d.gap >= 0.45){
+    verdict = 'Need clearly outruns financing. A review candidate: the portfolio is thin against the measured need.';
+  } else if (d.gap >= 0.15){
+    verdict = 'Need ahead of financing. A portfolio conversation, not necessarily new money.';
+  } else if (d.gap > -0.15){
+    verdict = 'Need and financing are roughly in step, near the middle of both distributions.';
+  } else {
+    verdict = 'Financing ahead of measured need: the portfolio is heavier than the need ranks imply.';
+    quiet = true;
+  }
+
+  const bars = four.map(function(pair){
+    const label = pair[0], v = pair[1];
+    const has = v !== null && v !== undefined && !isNaN(v);
+    const w = has ? Math.max(0, Math.min(100, v)) : 100;
+    return '<div class="barbox"><span>' + label + '</span><span class="track">' +
+      '<span class="fill' + (has ? '' : ' none') + '" style="width:' + w + '%"></span></span>' +
+      '<span class="val">' + (has ? v.toFixed(1) : 'n/a') + '</span></div>';
+  }).join('');
+
+  const kpi = (u, v) => '<div><span class="u">' + u + '</span><b>' + v + '</b></div>';
+  const chips = rob ? rob.ranks.map(function(rank, i){
+    const on = rank !== null && rank <= 25;
+    return '<span class="chipb' + (on ? ' on' : '') + '">' + CFLAB[i] + ' ' +
+      (rank === null ? '-' : rank) + '</span>';
+  }).join('') : '';
+
+  let drift = 'No comparable reading in both 2015 and a later year.';
+  if (conv){
+    drift = 'Need ' + (conv.delta > 0 ? 'rose ' : 'fell ') + Math.abs(conv.delta).toFixed(1) +
+      ' points between 2015 and ' + conv.year + '. ' +
+      (conv.pc > 0 ? money(conv.pc) + ' per person approved since 2015.'
+                   : 'Nothing approved since 2015.');
+  }
+
+  CFB.innerHTML =
+    '<h4>' + d.name + '</h4>' +
+    '<div class="meta">' + (d.region || '') + ' &middot; ' + (d.income || '') + '</div>' +
+    '<p class="verdict' + (quiet ? ' quiet' : '') + '">' + verdict + '</p>' +
+    '<div class="lbl">The four gaps &middot; points of population unserved</div>' + bars +
+    '<div class="lbl">Position</div><div class="kpis">' +
+      kpi('Need index', d.complete ? d.need.toFixed(1) + ' of 100' : 'not ranked') +
+      kpi('Financing / person', d.pc > 0 ? money(d.pc) : '$0') +
+      kpi('Allocation gap', d.complete ? (d.gap > 0 ? '+' : '') + d.gap.toFixed(2) : '-') +
+      kpi('Operations', fmt(d.ops)) +
+      kpi('Short list', rob && rob.baseline ? '#' + rob.baseline + ' of 25'
+          : (d.complete ? 'outside the 25' : '-')) +
+      kpi('Population', d.population ? fmt(d.population) : '-') +
+    '</div>' +
+    '<div class="lbl">Rank under each reading</div><div class="chips">' +
+      (chips || '<span class="chipb">not ranked</span>') + '</div>' +
+    '<div class="lbl">Since 2015</div><p class="drift">' + drift + '</p>' +
+    '<div class="foot"><button class="go" id="cf-go">Show in the short-list table</button></div>';
+  document.getElementById('cf-go').addEventListener('click', function(){ playSearch(d.name); });
+  CF.hidden = false;
+}
+
+document.getElementById('cf-close').addEventListener('click', function(){ CF.hidden = true; });
+window.addEventListener('keydown', function(e){ if (e.key === 'Escape') CF.hidden = true; });
+countries.on('click', function(event, f){ openCountry(f.properties.iso3); });
+[...document.querySelectorAll('#blindtable tbody tr')].forEach(function(tr){
+  tr.addEventListener('click', function(){ openCountry(tr.dataset.iso); });
+});
+
+/* ---------- weights the reader can move ---------- */
+(function weighting(){
+  const KEYS = ['gap_poverty', 'gap_hunger', 'gap_water', 'gap_energy'];
+  const LAB = {gap_poverty: 'Poverty', gap_hunger: 'Hunger', gap_water: 'Water',
+               gap_energy: 'Electricity'};
+  const pop = DATA.countries.filter(d => d.complete);
+  const published = new Map(DATA.priority.map((d, i) => [d.iso3, i + 1]));
+  const state = {gap_poverty: 5, gap_hunger: 5, gap_water: 5, gap_energy: 5};
+
+  // (count of values below) / (n - 1): SQLite's PERCENT_RANK, which is what
+  // mart_priority uses, so equal weights reproduce the published list.
+  function percentile(pairs){
+    const sorted = pairs.map(p => p[1]).sort((a, b) => a - b);
+    const n = sorted.length;
+    const out = new Map();
+    pairs.forEach(function(pair){
+      let lo = 0, hi = n;
+      while (lo < hi){
+        const mid = (lo + hi) >> 1;
+        if (sorted[mid] < pair[1]) lo = mid + 1; else hi = mid;
+      }
+      out.set(pair[0], n > 1 ? lo / (n - 1) : 0);
+    });
+    return out;
+  }
+  const finPct = percentile(pop.map(d => [d.iso3, d.pc || 0]));
+
+  function liveNeed(){
+    const rows = [];
+    pop.forEach(function(d){
+      let num = 0, den = 0;
+      KEYS.forEach(function(k){
+        const w = state[k];
+        if (w <= 0) return;
+        const g = d[k];
+        // A country is read on the gaps it reports, renormalised over the
+        // weighted ones - the same rule as the SQL, so equal weights must
+        // reproduce the published list exactly.
+        if (g === null || g === undefined) return;
+        num += w * g; den += w;
+      });
+      if (!den) return;
+      rows.push([d.iso3, num / den]);
+    });
+    return rows;
+  }
+
+  function draw(){
+    const need = liveNeed();
+    const tb = document.querySelector('#wtable tbody');
+    if (!need.length){
+      tb.innerHTML = '<tr><td colspan="6">Every weight is at zero - raise one to rank.</td></tr>';
+      document.getElementById('wnote2').textContent = '';
+      document.getElementById('wdrop').textContent = '';
+      return;
+    }
+    const needPct = percentile(need);
+    const ranked = need.map(function(pair){
+      return {iso3: pair[0], need: pair[1], gap: needPct.get(pair[0]) - finPct.get(pair[0])};
+    }).sort((a, b) => b.gap - a.gap);
+    const live25 = ranked.slice(0, 25);
+    const kept = live25.filter(r => published.has(r.iso3));
+    const out = [...published.keys()].filter(iso => !live25.some(r => r.iso3 === iso));
+
+    tb.innerHTML = ranked.slice(0, 10).map(function(r, i){
+      const d = byIso.get(r.iso3), was = published.get(r.iso3);
+      let mv = '<span class="mv in">new</span>';
+      if (was){
+        // Countries that tie on the gap keep the published order; a one-place
+        // swap between equal scores is not a finding.
+        const tied = d.gap !== null && Math.abs(r.gap - d.gap) < 0.005;
+        const diff = was - (i + 1);
+        mv = tied ? '<span class="mv same">same</span>'
+           : '<span class="mv ' + ((diff > 0 || !diff) ? 'in' : 'out') + '">' +
+             (diff === 0 ? 'same' : (diff > 0 ? '+' : '') + diff) + '</span>';
+      }
+      return '<tr data-iso="' + r.iso3 + '"><td>' + (i + 1) + '</td><td>' + d.name + '</td>' +
+        '<td style="text-align:right">' + r.need.toFixed(1) + '</td>' +
+        '<td style="text-align:right">' + (d.pc > 0 ? money(d.pc) : 'none') + '</td>' +
+        '<td style="text-align:right;color:' + (r.gap > 0 ? '#a2701c' : '#005f93') + '">' +
+        (r.gap > 0 ? '+' : '') + r.gap.toFixed(2) + '</td><td>' + mv + '</td></tr>';
+    }).join('');
+
+    [...tb.querySelectorAll('tr')].forEach(function(tr){
+      tr.style.cursor = 'pointer';
+      tr.addEventListener('click', function(){ openCountry(tr.dataset.iso); });
+    });
+
+    document.getElementById('wnote2').innerHTML = '<b>' + kept.length +
+      ' of the published 25</b> survive this weighting, out of ' + ranked.length +
+      ' countries ranked on the gaps they report.';
+    document.getElementById('wdrop').innerHTML = out.length
+      ? '<b>Leaving the list:</b> ' + out.slice(0, 8).map(iso => byIso.get(iso).name).join(', ') +
+        (out.length > 8 ? ' and ' + (out.length - 8) + ' more.' : '.')
+      : '<b>No one leaves:</b> the same 25 countries, in a different order.';
+  }
+
+  const wrap = document.getElementById('wsliders');
+  KEYS.forEach(function(k){
+    const row = document.createElement('div');
+    row.className = 'wrow';
+    row.innerHTML = '<span>' + LAB[k] + '</span>' +
+      '<input type="range" min="0" max="10" step="1" value="5" data-key="' + k +
+      '" aria-label="Weight for ' + LAB[k] + '"><span class="wv">5</span>';
+    wrap.appendChild(row);
+  });
+  wrap.addEventListener('input', function(e){
+    const k = e.target.dataset.key;
+    if (!k) return;
+    state[k] = Number(e.target.value);
+    e.target.parentNode.querySelector('.wv').textContent = e.target.value;
+    draw();
+  });
+  document.getElementById('wreset').addEventListener('click', function(){
+    KEYS.forEach(function(k){ state[k] = 5; });
+    [...wrap.querySelectorAll('input')].forEach(function(el){
+      el.value = 5;
+      el.parentNode.querySelector('.wv').textContent = '5';
+    });
+    draw();
+  });
+  draw();
+})();
 </script>
 </body>
 </html>

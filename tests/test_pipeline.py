@@ -356,6 +356,44 @@ class TestRenderedPage(unittest.TestCase):
         self.assertIn('href="#data"', head)
         self.assertIn('id="data"', self.html)
 
+    def test_four_stops_link_to_the_four_sections(self):
+        # The on-ramp is the only navigation for a reader who arrives cold.
+        stops = ['href="#countries"', 'href="#robustness"',
+                 'href="#trend"', 'href="#method"']
+        block = self.html.split('class="start"', 1)[1].split("</div>", 1)[0]
+        for stop in stops:
+            self.assertIn(stop, block)
+
+    def test_country_file_exists_and_is_clickable(self):
+        for marker in ('id="cf"', 'id="cf-body"', 'id="cf-close"', 'id="cf-go"',
+                       'function openCountry('):
+            self.assertIn(marker, self.html)
+        # every row of the short list carries the key the drawer opens on
+        self.assertIn("tr.dataset.iso = ", self.html)
+        self.assertIn("tr.addEventListener('click'", self.html)
+
+    def test_weights_panel_has_four_sliders_and_a_table(self):
+        # The sliders are built at runtime from KEYS, so assert on that source.
+        for marker in ('id="wsliders"', 'id="wtable"', 'id="wnote2"', 'id="wreset"'):
+            self.assertIn(marker, self.html)
+        self.assertIn('type="range"', self.html)
+        keys = self.html.split("const KEYS = [", 1)[1].split("]", 1)[0]
+        self.assertEqual(keys.count("'"), 8)  # four keys, opening and closing quote
+        self.assertIn("gap_poverty", keys)
+        self.assertIn("gap_energy", keys)
+
+    def test_matrix_is_sortable_and_filterable(self):
+        self.assertIn('id="robshow25"', self.html)
+        self.assertIn('id="robsort"', self.html)
+        self.assertIn("th.className = 'scol'", self.html)
+        self.assertIn("th.dataset.col = i", self.html)
+        self.assertIn("head.querySelectorAll('th.scol')", self.html)
+
+    def test_plain_words_glossary_covers_the_terms_the_page_uses(self):
+        self.assertIn('class="glossary"', self.html)
+        blocks = self.html.split('class="glossary"', 1)[1]
+        self.assertGreaterEqual(blocks.count("<dt>"), 7)
+
 
 if __name__ == "__main__":
     unittest.main()
