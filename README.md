@@ -87,6 +87,23 @@ That drawing answers what a table answers badly — whether the list is a handfu
 regional pattern, and where the field is simply financed ahead of its need. Everything after it
 is the argument behind those squares.
 
+Before the argument starts, the page stops generalising for three columns. Three countries on the
+same list, read with the same ruler, turn out to be three different problems:
+
+<p align="center">
+  <img src="docs/img/cases.png" alt="Three country columns: Zimbabwe need without money, DR Congo many operations few dollars per person, Malawi a rank depending on the reading" width="1040">
+</p>
+
+<p align="center"><em>One list, three different problems. Zimbabwe has need and no approved money;
+DR Congo has 180 operations and less per person than the field's median; Malawi sits on the cut,
+third of six readings. Each chart is built for its own question rather than borrowed from a chart
+library.</em></p>
+
+The third column is the one worth keeping: the list closes at **+0.3373**, a value Malawi, Niger
+and Guatemala share, and Sudan at twenty-sixth misses by six thousandths of a rank. A short list
+that ends in a tie is not fragile in principle - it is fragile in a specific, countable way, and
+the footnote says so instead of hiding it. Country names in all three columns open their file.
+
 The page is one file with no dependencies beyond a single CDN copy of D3, and it moves from
 the map to the book without leaving the page. The default view colours each country by its
 allocation gap and opens a country card on hover, so a portfolio question can be asked of the
@@ -130,9 +147,10 @@ programme officer, a donor, a journalist. Five things carry that load:
 - **Four stops at the top of the page.** A strip under the headline offers the map, the short
   list, the direction of travel and the method, so a first visit does not start with a menu.
 - **A country file, not a tooltip.** Clicking a country on the map, a row of the short list, a
-  row of the matrix or a dot in the drift panel opens a card with the four gaps as plain bars,
-  the six numbers a reviewer would otherwise look up in three files, a one-sentence verdict, the
-  country's rank under each of the six readings, and what changed since 2015.
+  row of the matrix, a dot in the drift panel or a name in the three-country columns opens a card
+  with the four gaps as plain bars, the six numbers a reviewer would otherwise look up in three
+  files, a one-sentence verdict, the country's rank under each of the six readings, and what
+  changed since 2015.
 
 <p align="center">
   <img src="docs/img/countryfile.png" alt="Country file for Zimbabwe: four gap bars, six numbers, ranks under each reading" width="640">

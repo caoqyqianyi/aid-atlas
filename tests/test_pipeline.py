@@ -331,8 +331,8 @@ class TestRenderedPage(unittest.TestCase):
         cls.html = (ROOT / "site" / "index.html").read_text(encoding="utf-8")
 
     def test_sections_render_in_order(self):
-        ids = ["overview", "field", "countries", "robustness", "trend", "portfolio",
-               "operating", "method"]
+        ids = ["overview", "field", "cases", "countries", "robustness", "trend",
+               "portfolio", "operating", "method"]
         positions = [self.html.index('id="%s"' % i) for i in ids]
         self.assertEqual(positions, sorted(positions))
 
@@ -362,6 +362,24 @@ class TestRenderedPage(unittest.TestCase):
                        'class="fcap"', "band.className = 'fband'", "t.className = 'ftile'"):
             self.assertIn(marker, self.html)
         self.assertIn("DATA.countries.filter(d => d.complete && d.gap !== null)", self.html)
+
+    def test_the_three_cases_read_as_one_spread(self):
+        # An editorial spread: three named countries, three hand-built charts, one footnote.
+        for marker in ('<section class="cases" id="cases">', 'id="cz"', 'id="cd"', 'id="cm"',
+                       "rows.find(r => r.iso3 === 'MWI')", '<article class="case">',
+                       'class="cfoot"'):
+            self.assertIn(marker, self.html)
+        block = self.html.split('<section class="cases" id="cases">', 1)[1].split("</section>", 1)[0]
+        self.assertEqual(block.count('<article class="case">'), 3)
+        for iso in ("ZWE", "COD", "MWI"):
+            self.assertIn('data-iso="%s"' % iso, block)
+        for name in ("Zimbabwe", "DR Congo", "Malawi"):
+            self.assertIn(name, block)
+        # the case charts are drawn from the payload, not hard-coded pixels
+        js = self.html.split("(function cases(){", 1)[1]
+        self.assertIn("byIso.get('ZWE')", js)
+        self.assertIn("byIso.get('COD')", js)
+        self.assertIn("rob.rows.find", js)
 
     def test_four_stops_link_to_the_four_sections(self):
         # The on-ramp is the only navigation for a reader who arrives cold.
