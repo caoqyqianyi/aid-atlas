@@ -196,7 +196,7 @@ def build_robustness(rows: list[dict]) -> dict:
         matrix.append(
             {
                 "iso3": c["iso3"],
-                "name": c["name"],
+                "name": DISPLAY_NAMES.get(c["iso3"], c["name"]),
                 "baseline": c.get("shortlist"),
                 "need": c.get("need"),
                 "held": held,
@@ -278,6 +278,11 @@ def build_convergence(rows: list[dict]) -> dict:
     }
 
 
+# Display names: the register carries the Nauruan label for Nauru, which reads
+# like a typo on a page written for an English-speaking reader.
+DISPLAY_NAMES = {"NRU": "Nauru"}
+
+
 def build_payload() -> dict:
     countries = load_csv("mart_country")
     health = {row["metric"]: num(row["value"]) for row in load_csv("mart_portfolio_health")}
@@ -295,7 +300,7 @@ def build_payload() -> dict:
         rows.append(
             {
                 "iso3": row["iso3"],
-                "name": row["name"],
+                "name": DISPLAY_NAMES.get(row["iso3"], row["name"]),
                 "region": row["region"],
                 "income": row["income_level"],
                 "ops": int(num(row["n_ops"], 0)),
@@ -344,7 +349,7 @@ def build_payload() -> dict:
         ],
         "priority": [
             {
-                "name": b["name"],
+                "name": DISPLAY_NAMES.get(b["iso3"], b["name"]),
                 "iso3": b["iso3"],
                 "region": b["region"],
                 "need": num(b["sdg_gap_index"]),
@@ -1277,9 +1282,9 @@ TEMPLATE = r"""<!doctype html>
       <p class="lede">The short list says who is short. It does not say how the money should
       travel. Split one billion three ways and the same country takes the largest cheque every
       time - Nigeria, a fifth to a quarter of the pool, because it is both large and needy. What
-      the rule changes is everyone else: whether Zimbabwe clears two dollars a head or one, and
-      whether Congo's 113 million people do. Every bar is dollars per person; the scale printed
-      above each strip says how far the field median of $74 sits above it.</p>
+      the rule changes is the tail: Zimbabwe gets $2.09 a head under one rule and $1.27 under
+      another, Malawi $1.80 or $0.77. And at every setting of this slider the best-served country
+      stays under the field median of $74.</p>
     </div>
     <div class="sbx-ctl">
       <div>
@@ -1288,10 +1293,10 @@ TEMPLATE = r"""<!doctype html>
                aria-label="Amount moved to the short list, in billions of dollars">
         <div class="sbx-ticks"><span>$0.5bn</span><span>$8bn</span><span>$16bn &middot; the 5% case</span></div>
       </div>
-      <p class="sbx-note">Raised once per person from the <b id="sbx-basis">61</b> countries already
+      <p class="sbx-note">Raised once per person from the <b id="sbx-basis">58</b> countries already
       financing ahead of their measured need, paid only to the 25. No rule here is the right rule:
-      the point is that a defensible reading of "who needs it most" is a choice, and that the
-      choice is worth about as much as the amount is small.</p>
+      a defensible reading of who needs it most is a choice, and the choice is worth less than the
+      distance it is meant to close.</p>
     </div>
     <div class="sbxrow" id="sbx-row"></div>
     <p class="sbx-foot" id="sbx-foot"></p>
@@ -1921,7 +1926,7 @@ const ht = document.querySelector('#healthtable tbody');
   const ALL = DATA.countries.filter(d => d.complete && d.pc !== null);
   const MEDIAN = median(ALL.map(d => d.pc));
   const LIFT = short.reduce((t, d) => t + Math.max(0, MEDIAN - d.pc) * d.population, 0);
-  const payers = DATA.countries.filter(d => d.complete && d.gap !== null && d.gap <= 0 &&
+  const payers = DATA.countries.filter(d => d.complete && d.gap !== null && d.gap < 0 &&
                                            d.population > 0);
   const payPop = payers.reduce((t, d) => t + d.population, 0);
   const recPop = short.reduce((t, d) => t + d.population, 0);
@@ -2377,6 +2382,13 @@ countries.on('click', function(event, f){ openCountry(f.properties.iso3); });
     const live25 = ranked.slice(0, 25);
     const kept = live25.filter(r => published.has(r.iso3));
     const out = [...published.keys()].filter(iso => !live25.some(r => r.iso3 === iso));
+    // Same rule as the table's "vs published" column: a country tied with the
+    // published gap on the seat it now holds has not been reordered, it has
+    // been tied - the published order among equals is arbitrary.
+    const moved = kept.filter(function(r, i){
+      const d = byIso.get(r.iso3);
+      return published.get(r.iso3) !== i + 1 && Math.abs(r.gap - d.gap) >= 0.005;
+    }).length;
 
     tb.innerHTML = ranked.slice(0, 10).map(function(r, i){
       const d = byIso.get(r.iso3), was = published.get(r.iso3);
@@ -2408,7 +2420,8 @@ countries.on('click', function(event, f){ openCountry(f.properties.iso3); });
     document.getElementById('wdrop').innerHTML = out.length
       ? '<b>Leaving the list:</b> ' + out.slice(0, 8).map(iso => byIso.get(iso).name).join(', ') +
         (out.length > 8 ? ' and ' + (out.length - 8) + ' more.' : '.')
-      : '<b>No one leaves:</b> the same 25 countries, in a different order.';
+      : '<b>No one leaves:</b> the same 25 countries, ' +
+        (moved ? 'with ' + moved + ' of them changing places.' : 'in the same order.');
   }
 
   const wrap = document.getElementById('wsliders');
