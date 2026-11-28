@@ -208,6 +208,56 @@
   .capnote{font-size:.74rem;color:var(--ink);line-height:1.6;margin:.9rem 0 0;
         max-width:100%;border-top:1px solid var(--hair);padding-top:.7rem}
 
+  /* ---------- the field plate: one square a country ---------- */
+  .field{padding:2.4rem 0 2rem;background:var(--paper);border-top:1px solid var(--rule);
+        border-bottom:1px solid var(--rule)}
+  .field .in{max-width:1180px;margin:0 auto;padding:0 24px}
+  .field .fhead{display:grid;grid-template-columns:1.02fr .98fr;gap:2.4rem;align-items:start}
+  .field .fkick{font-size:.61rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+  .field .fkick b{display:inline-block;width:20px;height:2px;background:var(--amber);
+        margin-right:.55rem;vertical-align:.16rem}
+  .field h2.fbig{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:1.92rem;
+        line-height:1.26;color:var(--navy);margin:.6rem 0 0;max-width:21ch;letter-spacing:-.015em}
+  .field h2.fbig .q{color:#a85c10}
+  .field .fline{font-size:.85rem;line-height:1.66;color:var(--ink);margin:.15rem 0 0;max-width:44ch}
+  .field .fline b{color:var(--navy)}
+  .field .fkey{display:flex;align-items:center;gap:.4rem;font-size:.62rem;color:var(--muted);
+        letter-spacing:.09em;text-transform:uppercase;margin:.95rem 0 0}
+  .field .fkey .sw{width:12px;height:12px;display:inline-block}
+  .field .fkey .ar{width:52px;height:12px;display:inline-block;
+        background:linear-gradient(90deg,#0b4a75,#dfe6ea 50%,#a85c10)}
+  .field .fkey .gap{margin-left:1.4rem}
+  .field .fkey .sq{position:relative;width:12px;height:12px;display:inline-block;
+        background:#e7b354;margin-right:.15rem}
+  .field .fkey .sq::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:3px;
+        background:var(--amber)}
+  .fgrid{margin:1.35rem 0 0}
+  .fband{display:grid;grid-template-columns:206px 1fr;gap:1.2rem;align-items:center;
+        padding:.38rem 0;border-top:1px solid var(--hair)}
+  .fband:last-child{border-bottom:1px solid var(--hair)}
+  .frl{font-size:.61rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
+        line-height:1.45}
+  .frl .no{color:var(--amber);font-weight:700;margin-right:.35rem}
+  .frl .cnt{display:block;font-size:.63rem;letter-spacing:.04em;text-transform:none;
+        color:var(--muted);margin-top:.12rem}
+  .frl .cnt b{color:var(--navy);font-weight:600}
+  .frl .cnt .k{color:#a85c10;font-weight:600}
+  .ftiles{display:flex;gap:4px;flex-wrap:wrap}
+  .ftile{width:12px;height:12px;background:#eceef0;cursor:pointer;display:block;position:relative;
+        transition:transform .1s ease,box-shadow .1s ease}
+  .ftile:hover{transform:translateY(-2px);box-shadow:0 0 0 1px var(--navy);z-index:2}
+  .ftile.on::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:3px;
+        background:var(--amber)}
+  .ftile.on:hover::after{background:#a85c10}
+  .fcap{font-size:.71rem;color:var(--muted);margin:.85rem 0 0;letter-spacing:.01em}
+  .ffield{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;margin-top:1.3rem;
+        border-top:1px solid var(--rule);padding-top:1.1rem}
+  .ffield .f b{display:block;font-size:1.3rem;line-height:1.15;color:var(--navy);
+        font-variant-numeric:tabular-nums}
+  .ffield .f b i{font-style:normal;color:var(--muted);font-size:.78rem;font-weight:400}
+  .ffield .f span{display:block;font-size:.75rem;line-height:1.55;color:var(--muted);margin-top:.35rem}
+  .ffield .f span em{font-style:normal;color:#a85c10}
+
   /* ---------- on-ramp, country file, weights, glossary ---------- */
   .start{background:var(--band,#f7f8f9);border-bottom:1px solid var(--rule)}
   .start .in{max-width:1180px;margin:0 auto;padding:.85rem 24px;display:grid;
@@ -317,6 +367,9 @@
     .start .in{grid-template-columns:1fr 1fr;gap:1rem}
     .cf{right:.6rem;bottom:.6rem;max-height:78vh;overflow:auto}
     .wout{grid-template-columns:1fr;gap:1rem}
+    .field .fhead{grid-template-columns:1fr;gap:1rem}
+    .fband{grid-template-columns:1fr;gap:.45rem;padding:.55rem 0}
+    .ffield{grid-template-columns:1fr;gap:1.1rem}
   }
 </style>
 </head>
@@ -384,6 +437,31 @@
       <span>seven terms in plain words</span></span></a>
   </div>
 </div>
+
+
+<section class="field" id="field">
+  <div class="in">
+    <div class="fhead">
+      <div>
+        <div class="fkick"><b></b>The whole field, drawn once</div>
+        <h2 class="fbig">One square is one country, and the list is <span class="q">thin</span></h2>
+      </div>
+      <div>
+        <p class="fline">Every country the model can rank, ordered by its gap inside each region:
+        worst served on the left, best financed on the right. <b>The amber rule under a square is
+        the short list.</b> Those rules cluster at the heads of three bands — 21 of the 25 come
+        from Sub-Saharan Africa, East Asia and the Pacific, and MENA, which between them hold 87
+        of the 167 ranked countries.</p>
+        <div class="fkey"><span class="ar"></span>
+          <span>need ahead</span><span>even</span><span>financing ahead</span>
+          <span class="gap sq"></span><span>on the short list</span></div>
+      </div>
+    </div>
+    <div class="fgrid" id="fgrid"></div>
+    <p class="fcap">Hover a square for the country and its gap; click it for the country file.</p>
+    <div class="ffield" id="ffield"></div>
+  </div>
+</section>
 
 <div class="wrap">
 <div id="ctip"></div>
@@ -1653,6 +1731,64 @@ countries.on('click', function(event, f){ openCountry(f.properties.iso3); });
     draw();
   });
   draw();
+})();
+
+/* ---------- the field plate ---------- */
+(function field(){
+  const host = document.getElementById('fgrid');
+  if (!host) return;
+  const rows = DATA.countries.filter(d => d.complete && d.gap !== null);
+  const short = new Set(DATA.priority.map(d => d.iso3));
+  const byRegion = {};
+  rows.forEach(function(d){ (byRegion[d.region] = byRegion[d.region] || []).push(d); });
+  const order = Object.keys(byRegion).sort(function(a, b){
+    return byRegion[b].length - byRegion[a].length;
+  });
+
+  order.forEach(function(name, i){
+    const list = byRegion[name].slice().sort(function(a, b){ return b.gap - a.gap; });
+    const listed = list.filter(d => short.has(d.iso3)).length;
+    const band = document.createElement('div');
+    band.className = 'fband';
+    band.innerHTML =
+      '<div class="frl"><span class="no">' + (i + 1 < 10 ? '0' : '') + (i + 1) + '</span>' + name +
+        '<span class="cnt"><b>' + list.length + '</b> ranked &middot; ' +
+        (listed ? '<span class="k">' + listed + '</span> on the list' : 'none on the list') +
+        '</span></div>' +
+      '<div class="ftiles"></div>';
+    const tiles = band.querySelector('.ftiles');
+    list.forEach(function(d){
+      const t = document.createElement('span');
+      t.className = 'ftile' + (short.has(d.iso3) ? ' on' : '');
+      t.style.background = GAP_SCALE(d.gap);
+      t.title = d.name + ' - allocation gap ' + (d.gap > 0 ? '+' : '') + d.gap.toFixed(2) +
+        (short.has(d.iso3) ? ' - on the short list' : '');
+      t.addEventListener('click', function(){ openCountry(d.iso3); });
+      tiles.appendChild(t);
+    });
+    host.appendChild(band);
+  });
+
+  // Three counts that the drawing makes visible.
+  const pos = rows.filter(d => d.gap > 0).length;
+  const ssa = rows.filter(d => d.region === 'Sub-Saharan Africa');
+  const ssaListed = ssa.filter(d => short.has(d.iso3)).length;
+  const sa = rows.filter(d => d.region === 'South Asia');
+  const saBest = sa.slice().sort(function(a, b){ return b.gap - a.gap; })[0];
+  const cut = DATA.priority[DATA.priority.length - 1].gap;
+  const sign = v => (v > 0 ? '+' : '') + v.toFixed(2);
+
+  document.getElementById('ffield').innerHTML =
+    '<div class="f"><b>' + pos + ' <i>of ' + rows.length + '</i></b>' +
+      '<span>countries where measured need outruns what they receive. The other ' +
+      (rows.length - pos) + ' are financed at or above their measured need.</span></div>' +
+    '<div class="f"><b>' + ssaListed + ' <i>of ' + short.size + '</i></b>' +
+      '<span>of the short list sit in Sub-Saharan Africa, the region that holds ' + ssa.length +
+      ' of the ' + rows.length + ' ranked countries.</span></div>' +
+    '<div class="f"><b>0 <i>of ' + sa.length + '</i></b>' +
+      '<span>South Asia: every ranked country carries a positive gap except one, and none reaches ' +
+      'the cut. Its nearest, <em>' + (saBest ? saBest.name : '') + '</em> at <em>' + sign(saBest ? saBest.gap : 0) +
+      '</em>, sits under the ' + sign(cut) + ' that closes the list.</span></div>';
 })();
 </script>
 </body>

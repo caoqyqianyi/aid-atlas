@@ -72,6 +72,21 @@ review: it produces a short list that a team of five could actually work through
 
 ## Reading the dashboard
 
+The page opens with one drawing rather than one chart: **167 squares, one country each**, ordered
+by its gap inside its own region, with an amber rule under every country on the short list.
+
+<p align="center">
+  <img src="docs/img/field.png" alt="167 ranked countries as one square each, grouped in seven regional bands" width="1000">
+</p>
+
+<p align="center"><em>The whole field. Bands are ordered by size, squares by allocation gap within
+each band, colour by the gap itself. The amber rules give the short list a shape: 21 of the 25
+sit in three bands, and South Asia's five ranked countries all fall under the cut.</em></p>
+
+That drawing answers what a table answers badly — whether the list is a handful of countries or a
+regional pattern, and where the field is simply financed ahead of its need. Everything after it
+is the argument behind those squares.
+
 The page is one file with no dependencies beyond a single CDN copy of D3, and it moves from
 the map to the book without leaving the page. The default view colours each country by its
 allocation gap and opens a country card on hover, so a portfolio question can be asked of the

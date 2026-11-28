@@ -331,7 +331,7 @@ class TestRenderedPage(unittest.TestCase):
         cls.html = (ROOT / "site" / "index.html").read_text(encoding="utf-8")
 
     def test_sections_render_in_order(self):
-        ids = ["overview", "countries", "robustness", "trend", "portfolio",
+        ids = ["overview", "field", "countries", "robustness", "trend", "portfolio",
                "operating", "method"]
         positions = [self.html.index('id="%s"' % i) for i in ids]
         self.assertEqual(positions, sorted(positions))
@@ -355,6 +355,13 @@ class TestRenderedPage(unittest.TestCase):
         head = self.html.split('class="datalink"', 1)[1][:200]
         self.assertIn('href="#data"', head)
         self.assertIn('id="data"', self.html)
+
+    def test_the_field_plate_draws_one_square_per_country(self):
+        # The plate is drawn at runtime from the payload; assert the scaffolding and the rule.
+        for marker in ('<section class="field" id="field">', 'id="fgrid"', 'id="ffield"',
+                       'class="fcap"', "band.className = 'fband'", "t.className = 'ftile'"):
+            self.assertIn(marker, self.html)
+        self.assertIn("DATA.countries.filter(d => d.complete && d.gap !== null)", self.html)
 
     def test_four_stops_link_to_the_four_sections(self):
         # The on-ramp is the only navigation for a reader who arrives cold.
