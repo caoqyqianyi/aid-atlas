@@ -728,6 +728,65 @@ TEMPLATE = r"""<!doctype html>
     .cfoot{max-width:none}
   }
 
+  /* ---------- the same billion, three rules ---------- */
+  .sbx{background:var(--navy);color:#e6ecf2;margin:0 calc(50% - 50vw);
+        padding:3.4rem 0 3rem;border-top:1px solid #0b3a5e;border-bottom:1px solid #0b3a5e}
+  .sbx .sec-no{color:var(--amber)}
+  .sbx-head{display:grid;grid-template-columns:minmax(0,1.06fr) minmax(0,.94fr);gap:3rem;
+        align-items:start;padding-bottom:1.2rem;border-bottom:1px solid rgba(255,255,255,.16)}
+  .sbx .kick{font-size:.61rem;letter-spacing:.15em;text-transform:uppercase;color:#8fa3b6;display:block;
+        margin-bottom:.5rem}
+  .sbx .kick i{font-style:normal;color:var(--amber);font-weight:700;margin-right:.7rem}
+  .sbx .kick b{display:inline-block;width:20px;height:2px;background:var(--amber);
+        margin-right:.55rem;vertical-align:.16rem}
+  .sbx .kick i + b{margin-left:0}
+  .sbx h2{color:#fff;max-width:34ch}
+  .sbx .lede{color:#b9c6d2;font-size:.9rem;line-height:1.7;max-width:64ch;margin:1.5rem 0 0}
+  .sbx-ctl{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:2.2rem;align-items:end;
+        margin:2.2rem 0 0;padding-bottom:1.1rem;border-bottom:1px solid rgba(255,255,255,.16)}
+  .sbx-amt{font-family:Georgia,"Times New Roman",serif;font-size:2.5rem;line-height:1;color:#fff;
+        font-variant-numeric:tabular-nums}
+  .sbx-amt em{font-style:normal;font-family:"Open Sans","Segoe UI",Arial,sans-serif;font-size:.78rem;
+        letter-spacing:.02em;color:#9db0c1;margin-left:.5rem;position:relative;top:-.35rem}
+  .sbx-amt small{display:block;font-family:"Open Sans","Segoe UI",Arial,sans-serif;font-size:.68rem;
+        letter-spacing:.06em;text-transform:uppercase;color:#8fa3b6;margin-bottom:.45rem}
+  .sbx-range{width:100%;accent-color:var(--amber);margin:0 0 .1rem}
+  .sbx-ticks{display:flex;justify-content:space-between;font-size:.64rem;color:#8fa3b6;
+        letter-spacing:.04em}
+  .sbx-note{font-size:.72rem;line-height:1.6;color:#9db0c1;margin:.55rem 0 0}
+  .sbx-note b{color:var(--amber);font-weight:600}
+  .sbxrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2.6rem;margin-top:1.6rem}
+  .sbxp{border-top:1px solid rgba(255,255,255,.28);padding-top:.85rem}
+  .sbxp .nm{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem}
+  .sbxp .nm b{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:1.02rem;color:#fff}
+  .sbxp .nm span{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:#8fa3b6;
+        text-align:right}
+  .sbxp .sub{font-size:.68rem;line-height:1.5;color:#9db0c1;margin:.3rem 0 0;min-height:2.6em}
+  .sbxp .ruler{display:flex;justify-content:space-between;font-size:.58rem;letter-spacing:.06em;
+        text-transform:uppercase;color:#8fa3b6;border-bottom:1px dashed rgba(255,255,255,.22);
+        padding-bottom:.18rem;margin-top:.75rem}
+  .sbxp .bars{display:flex;gap:3px;align-items:flex-end;height:46px;margin:0 0 .1rem}
+  .sbxp .sbar{flex:1;height:46px;background:rgba(255,255,255,.085);position:relative;border-radius:1px}
+  .sbxp .sbar i{position:absolute;bottom:0;left:0;right:0;background:var(--amber);border-radius:1px;
+        display:block}
+  .sbxp .bcap{font-size:.56rem;letter-spacing:.04em;color:#7f93a6;margin:.1rem 0 .55rem}
+  .sbxp .stat{display:flex;justify-content:space-between;gap:.8rem;font-size:.72rem;
+        border-top:1px solid rgba(255,255,255,.12);padding:.34rem 0}
+  .sbxp .stat span{color:#9db0c1}
+  .sbxp .stat b{color:#fff;font-weight:600;font-variant-numeric:tabular-nums}
+  .sbxp .stat i{font-style:normal;color:#8fa3b6}
+  .sbx-foot{font-size:.8rem;line-height:1.65;color:#c2cfda;border-top:1px solid rgba(255,255,255,.2);
+        margin:1.9rem 0 0;padding-top:1rem;max-width:86ch}
+  .sbx-foot b{color:#fff;font-weight:600}
+  .sbx-foot em{font-style:normal;color:var(--amber)}
+  @media (max-width:960px){
+    .sbx{padding:2.4rem 0 2.1rem}
+    .sbx-head{grid-template-columns:1fr;gap:.6rem}
+    .sbx .lede{margin-top:.3rem}
+    .sbx-ctl{grid-template-columns:1fr;gap:1.2rem}
+    .sbxrow{grid-template-columns:1fr;gap:1.9rem}
+  }
+
   /* ---------- on-ramp, country file, weights, glossary ---------- */
   .start{background:var(--band,#f7f8f9);border-bottom:1px solid var(--rule)}
   .start .in{max-width:1180px;margin:0 auto;padding:.85rem 24px;display:grid;
@@ -1208,8 +1267,39 @@ TEMPLATE = r"""<!doctype html>
   </div>
 </section>
 
+<section class="sec sbx" id="sandbox">
+  <div class="wrap">
+    <div class="sbx-head">
+      <div>
+        <span class="kick"><i>08</i><b></b>THE SAME MONEY, THREE RULES</span>
+        <h2>Three defensible ways to spend the same money</h2>
+      </div>
+      <p class="lede">The short list says who is short. It does not say how the money should
+      travel. Split one billion three ways and the same country takes the largest cheque every
+      time - Nigeria, a fifth to a quarter of the pool, because it is both large and needy. What
+      the rule changes is everyone else: whether Zimbabwe clears two dollars a head or one, and
+      whether Congo's 113 million people do. Every bar is dollars per person; the scale printed
+      above each strip says how far the field median of $74 sits above it.</p>
+    </div>
+    <div class="sbx-ctl">
+      <div>
+        <div class="sbx-amt"><small>Amount moved</small><span id="sbx-amt">$1.0bn</span><em>of $16.6bn</em></div>
+        <input class="sbx-range" id="sbx-share" type="range" min="0.5" max="16" step="0.5" value="1"
+               aria-label="Amount moved to the short list, in billions of dollars">
+        <div class="sbx-ticks"><span>$0.5bn</span><span>$8bn</span><span>$16bn &middot; the 5% case</span></div>
+      </div>
+      <p class="sbx-note">Raised once per person from the <b id="sbx-basis">61</b> countries already
+      financing ahead of their measured need, paid only to the 25. No rule here is the right rule:
+      the point is that a defensible reading of "who needs it most" is a choice, and that the
+      choice is worth about as much as the amount is small.</p>
+    </div>
+    <div class="sbxrow" id="sbx-row"></div>
+    <p class="sbx-foot" id="sbx-foot"></p>
+  </div>
+</section>
+
 <section class="sec" id="method">
-  <div class="sec-head"><div class="sec-no">08</div>
+  <div class="sec-head"><div class="sec-no">09</div>
     <div><h2>Method, and what this cannot tell you</h2></div></div>
   <h3>How it works</h3>
   <div class="steps">
@@ -1810,6 +1900,99 @@ const ht = document.querySelector('#healthtable tbody');
   draw(parseFloat(slider.value));
 })();
 
+/* ---------- the same billion, three rules ---------- */
+(function sandbox(){
+  const row = document.getElementById('sbx-row');
+  const foot = document.getElementById('sbx-foot');
+  const slider = document.getElementById('sbx-share');
+  const amtOut = document.getElementById('sbx-amt');
+  const basis = document.getElementById('sbx-basis');
+  if (!row || !slider || !DATA.priority) return;
+
+  const short = DATA.priority.slice().sort((a, b) => b.gap - a.gap);
+  const RULES = [
+    {key: 'person', name: 'Per person', weight: 'weighted by population',
+     sub: 'The same dollars for every human. Population decides, so the largest country on the list takes the largest cheque.'},
+    {key: 'need', name: 'Per need', weight: 'weighted by the SDG gap index',
+     sub: 'The same dollars per point of need: money follows the depth of the gap, not the size of the country.'},
+    {key: 'gap', name: 'Per gap', weight: 'weighted by the allocation gap',
+     sub: 'Money follows the shortfall against financing, so it lands where the list itself is steepest.'}
+  ];
+  const ALL = DATA.countries.filter(d => d.complete && d.pc !== null);
+  const MEDIAN = median(ALL.map(d => d.pc));
+  const LIFT = short.reduce((t, d) => t + Math.max(0, MEDIAN - d.pc) * d.population, 0);
+  const payers = DATA.countries.filter(d => d.complete && d.gap !== null && d.gap <= 0 &&
+                                           d.population > 0);
+  const payPop = payers.reduce((t, d) => t + d.population, 0);
+  const recPop = short.reduce((t, d) => t + d.population, 0);
+  basis.textContent = payers.length;
+
+  function median(xs){
+    const a = xs.slice().sort((x, y) => x - y);
+    const m = Math.floor(a.length / 2);
+    return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
+  }
+  function weight(d, rule){
+    if (rule === 'person') return d.population;
+    if (rule === 'need') return d.need * d.population;
+    return Math.max(0, d.gap) * d.population;
+  }
+  function split(rule, pool){
+    const den = short.reduce((t, d) => t + weight(d, rule), 0);
+    const amt = short.map(d => pool * weight(d, rule) / den);
+    return {amt: amt, pc: amt.map((a, i) => a / short[i].population)};
+  }
+  function money(v){
+    if (v >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'bn';
+    if (v >= 1e6) return '$' + Math.round(v / 1e6) + 'm';
+    return '$' + (v / 1e3).toFixed(0) + 'k';
+  }
+  function panel(rule, g, amt){
+    const top = Math.max.apply(null, g);
+    const med = median(g);
+    const above5 = g.filter(x => x >= 5).length;
+    const big = Math.max.apply(null, amt);
+    const bigName = short[amt.indexOf(big)].name;
+    const bigShare = 100 * amt[amt.indexOf(big)] / amt.reduce((t, x) => t + x, 0);
+    const bars = g.map((v, i) => '<div class="sbar" title="' + short[i].name + ': $' +
+      v.toFixed(2) + ' per person"><i style="height:' + (100 * v / top).toFixed(1) +
+      '%"></i></div>').join('');
+    return '<div class="sbxp">' +
+      '<div class="nm"><b>' + rule.name + '</b><span>' + rule.weight + '</span></div>' +
+      '<p class="sub">' + rule.sub + '</p>' +
+      '<div class="ruler"><span>per person, 0 - $' + top.toFixed(2) + '</span><span>$74 is ' +
+        Math.round(MEDIAN / top) + 'x this</span></div>' +
+      '<div class="bars">' + bars + '</div>' +
+      '<div class="bcap">each bar one country, in list order - hover for the name</div>' +
+      '<div class="stat"><span>largest cheque</span><b>' + money(big) + '</b><i>' + bigName + ', ' +
+        Math.round(bigShare) + '% of the pool</i></div>' +
+      '<div class="stat"><span>median, dollars per person</span><b>$' + med.toFixed(2) + '</b><i>' +
+        (100 * med / MEDIAN).toFixed(1) + '% of the median</i></div>' +
+      '<div class="stat"><span>reach $5 a person</span><b>' + above5 + ' of 25</b><i>' +
+        (above5 ? 'above the line' : ' ' ) + '</i></div>' +
+      '</div>';
+  }
+
+  function draw(bn){
+    const pool = bn * 1e9;
+    amtOut.textContent = '$' + bn.toFixed(1) + 'bn';
+    row.innerHTML = RULES.map(function(r){
+      const s = split(r.key, pool);
+      return panel(r, s.pc, s.amt);
+    }).join('');
+    const perHeadGain = pool / recPop;
+    const perHeadCost = pool / payPop;
+    foot.innerHTML = 'Raised per head from the ' + payers.length + ' countries already ahead of ' +
+      'their need - ' + (payPop / 1e9).toFixed(2) + ' billion people - this costs <b>$' +
+      perHeadCost.toFixed(2) + '</b> a head there and pays <b>$' + perHeadGain.toFixed(2) +
+      '</b> to each of the ' + Math.round(recPop / 1e6) + 'm on the list. Lifting all 25 to the ' +
+      'field median of $' + MEDIAN.toFixed(0) + ' would take <b>$' + (LIFT / 1e9).toFixed(1) +
+      'bn</b>, <em>' + Math.round(LIFT / pool) + ' amounts like this one</em>. The list measures ' +
+      'distance; a billion is a thin wedge of it, and which wedge you take is a choice.';
+  }
+  slider.addEventListener('input', () => draw(parseFloat(slider.value)));
+  draw(parseFloat(slider.value));
+})();
 /* ---------- data quality ---------- */
 (function dataQuality(){
   const d = DATA.dq;

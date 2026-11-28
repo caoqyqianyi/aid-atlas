@@ -332,7 +332,7 @@ class TestRenderedPage(unittest.TestCase):
 
     def test_sections_render_in_order(self):
         ids = ["overview", "field", "cases", "countries", "robustness", "trend",
-               "portfolio", "operating", "method"]
+               "portfolio", "operating", "sandbox", "method"]
         positions = [self.html.index('id="%s"' % i) for i in ids]
         self.assertEqual(positions, sorted(positions))
 
@@ -380,6 +380,17 @@ class TestRenderedPage(unittest.TestCase):
         self.assertIn("byIso.get('ZWE')", js)
         self.assertIn("byIso.get('COD')", js)
         self.assertIn("rob.rows.find", js)
+
+    def test_the_sandbox_splits_one_pool_three_ways(self):
+        # The band is drawn at runtime: assert the scaffolding, the three rules and their weights.
+        for marker in ('<section class="sec sbx" id="sandbox">', 'id="sbx-share"', 'id="sbx-row"',
+                       'id="sbx-foot"', "name: 'Per person'", "name: 'Per need'", "name: 'Per gap'",
+                       "d.need * d.population", "Math.max(0, d.gap) * d.population"):
+            self.assertIn(marker, self.html)
+        js = self.html.split("(function sandbox(){", 1)[1].split("/* ---------- data quality", 1)[0]
+        # every rule must divide by population, or the bars would be total dollars, not per head
+        self.assertIn("a / short[i].population", js)
+        self.assertIn("DATA.priority", js)
 
     def test_four_stops_link_to_the_four_sections(self):
         # The on-ramp is the only navigation for a reader who arrives cold.

@@ -35,6 +35,7 @@ rather than as a map, and the geospatial layer is a reading aid, not the answer.
 - [Is the picture moving?](#is-the-picture-moving)
 - [The operating profile](#the-operating-profile)
 - [A scenario, priced](#a-scenario-priced)
+- [The same money, three rules](#the-same-money-three-rules)
 - [How it works](#how-it-works)
 - [Repository layout](#repository-layout)
 - [Running it](#running-it)
@@ -297,6 +298,36 @@ auditable rather than asserted. The one-page business case — assumptions, what
 not buy, and what evidence would falsify it — is in
 [`docs/reallocation-case.md`](docs/reallocation-case.md). It is a demonstration on a public
 snapshot, not a recommendation.
+
+## The same money, three rules
+
+The scenario above answers *how much*. The page closes with a harder question: *by what rule?*
+Take the same pool and split it three defensible ways — by population, by need, by gap — and
+watch which of the 25 names gets served. Every bar is dollars per person; each strip is scaled to
+its own tallest bar and printed with how many times the field median of $74 sits above it:
+
+<p align="center">
+  <img src="docs/img/sandbox.png" alt="Three panels: per person, per need, per gap, each 25 bars against a field median of 74 dollars" width="1040">
+</p>
+
+<p align="center"><em>Three rules at US$1bn. The strips are normalised to their own maximum and
+labelled with how many times the field median towers above them.</em></p>
+
+Three things come out of moving the slider, and none of them is the one the framing invites:
+
+- **The largest cheque goes to the same country under every rule.** Nigeria takes 21–27% of any
+  billion, because it is both large and needy. A "who wins" contest that changes the largest
+  winner is a contest between populations, not between rules.
+- **What the rule changes is the tail.** Paid per person, all 25 get $1.02 and nobody reaches $5.
+  Paid by gap, Zimbabwe reaches $2.09 and Malawi $0.77; paid by need, Congo reaches $1.96 and
+  Malawi $1.80. At the full 5% case (US$16.6bn) need-weighting fills 21 of the 25 to $5 a head —
+  and still nobody reaches the $74 median.
+- **The distance is the finding.** Lifting all 25 to the field median would take $30.9bn, about
+  31 billions like the default one. Reallocation at the margin is real, and it is an order of
+  magnitude smaller than the gap it is meant to close.
+
+The band is drawn in the browser from the same embedded payload; nothing in it is a hard-coded
+figure. It is the last section of the argument, and the one a stakeholder can argue with.
 
 ## How it works
 
